@@ -2,6 +2,7 @@ var path = require("path")
 var fs = require("fs")
 var solc = require("solc")
 var Web3 = require('web3')
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 import{ createVote } from "./Methods/createVote"
 import{ addVote } from "./Methods/addVote"
@@ -17,19 +18,19 @@ interface compiledContract {
 
 class Dvote {
        
-    private provider:any;
-    private accounts:any;
-    private web3:any;
-    private contractAddress:any;
-    private abi:any;
-    private contract:any;
+    private provider:any
+    private accounts:any
+    private web3:any
+    private contractAddress:any
+    private abi:any
+    private contract:any
 
-    constructor(provider:any){
+    constructor(mnemonic:any, endpointUrl:any){
       
-      this.provider = provider;
-      this.web3 = new Web3(Web3.givenProvider || this.provider);
+      this.provider = new HDWalletProvider(mnemonic, endpointUrl)
+      this.web3 = new Web3(Web3.givenProvider || this.provider)
 
-      const votePath = path.resolve(__dirname,"../build/contracts","Vote.json");
+      const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
 
       if (fs.existsSync(votePath)){
         const source  = fs.readFileSync(votePath,"UTF-8")
@@ -37,8 +38,8 @@ class Dvote {
         const voteJson = JSON.parse(source);
   
         
-        this.contractAddress = voteJson['address'];
-        this.abi = voteJson['jsonInterface'];
+        this.contractAddress = voteJson['address']
+        this.abi = voteJson['jsonInterface']
 
         this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress)
       }
@@ -46,7 +47,7 @@ class Dvote {
        
     }
     compile():compiledContract{
-      const craw = path.resolve(__dirname,"../contracts","Vote.sol");
+      const craw = path.resolve(__dirname,"../contracts","Vote.sol")
 
       const source  = fs.readFileSync(craw,"UTF-8")
 
@@ -92,8 +93,8 @@ class Dvote {
          result.options['ByteCode'] = this.compile().bytecode();
           
           fs.writeFile("build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
-            if (err) throw err;
-            else return 'Saved!';
+            if (err) throw err
+            else return 'Saved!'
           })
 
         }.bind(this))  
@@ -102,19 +103,33 @@ class Dvote {
 
     createVote(voteName:string, candidate:any, fromAccount:any){
        
-      createVote(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount);
+      createVote(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+
+        console.log(result)
+
+      }).catch(error=>{
+
+        console.log(error)
+      })
 
     }
 
     addVote(voteName:string, candidate:any, fromAccount:any){
 
-      addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAccount);
+      addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+
+        console.log(result)
+
+      }).catch(error=>{
+
+        console.log(error)
+      })
 
     }
 
     voteResult(voteName:string, fromAccount:any){
 
-      return voteResult(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount);
+      return voteResult(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
  
      }
 
