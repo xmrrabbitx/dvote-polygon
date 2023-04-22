@@ -1,0 +1,33 @@
+{
+  "name": "dvote-polygon",
+  "version": "1.0.0",
+  "description": "a dapp voting library integrated into polygon network",
+  "main": "src/dvote.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'tsc && node app.js'"
+  },
+  "author": "xmrrabbitx",
+  "license": "MIT",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.10",
+    "@types/express": "^4.17.17",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "solc": "^0.8.19",
+    "ts-node": "^10.9.1",
+    "web3": "^1.9.0"
+  },
+  "keywords": [
+    "dapp",
+    "polygon"
+  ],
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.4"
+  }
+}
