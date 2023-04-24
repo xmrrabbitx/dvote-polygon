@@ -13,6 +13,30 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "voteName",
+						"type": "string"
+					}
+				],
+				"name": "addAddress",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "string",
 						"name": "voteName",
 						"type": "string"
@@ -21,6 +45,11 @@
 						"internalType": "string",
 						"name": "candidate",
 						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
 					}
 				],
 				"name": "addVote",
@@ -88,36 +117,35 @@
 						"internalType": "string",
 						"name": "voteName",
 						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
 					}
 				],
-				"name": "getCandidates",
+				"name": "getAddress",
 				"outputs": [
 					{
-						"internalType": "string[]",
+						"internalType": "bool",
 						"name": "",
-						"type": "string[]"
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					}
-				],
-				"name": "getName",
+				"inputs": [],
+				"name": "myaddress",
 				"outputs": [
 					{
-						"internalType": "string",
+						"internalType": "address",
 						"name": "",
-						"type": "string"
+						"type": "address"
 					}
 				],
-				"stateMutability": "pure",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -174,6 +202,30 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "voters",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -204,11 +256,11 @@
 	},
 	"sources": {
 		"contracts/Vote.sol": {
-			"keccak256": "0xaaddc0e944596af11e9d73bfd3d4b6939c1950f1656def2bc538ed289e24dd14",
+			"keccak256": "0x758ee1b82a61b14ae6f4654915aeacd8f610e6c078b39c752b4869b7a9a17cfa",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://ef43c79b738c0b2f8b9f5a3215ea6a5aab656ee12ef5bf8c5e6a1a762115aaba",
-				"dweb:/ipfs/Qma7FxieYhcTuMviNMuYcRkeoepKePqBpk16q6Q5sQWDNT"
+				"bzz-raw://c25132b9a5954ca6b23f25df5c552541aa3db4795e7e4b19bcc2652b454aa30d",
+				"dweb:/ipfs/QmVHX89hSQboHeedDhM4sBk8bM6nH9WSqMAKTxepeUZdjn"
 			]
 		}
 	},

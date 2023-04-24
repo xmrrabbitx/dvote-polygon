@@ -5,6 +5,10 @@ contract Vote {
 
     mapping(string=>string[]) public candidateVote;
     mapping(string => mapping(string => uint)) public voteCount;
+    mapping(string=>mapping(address => bool)) public voters;
+ 
+    address public myaddress;
+
 
     struct Candidate {
         string name;
@@ -15,6 +19,7 @@ contract Vote {
         string name;
         uint256 votes;
     }
+
 
     constructor(){
 
@@ -34,12 +39,16 @@ contract Vote {
         
     }
 
-    function addVote(string memory voteName, string memory candidate) public returns(string memory){
+    function addVote(string memory voteName, string memory candidate, address addr) public returns(string memory){
 
         require(candidateVote[voteName].length > 0, "Vote does not exist.");
-        require(voteCount[voteName][candidate] == 0, "You have already voted for this candidate.");
+        // require(voteCount[voteName][candidate] == 0, "You have already voted for this candidate.");
+        require(!voters[voteName][addr], "Address has already voted!");
 
         voteCount[voteName][candidate]++;
+        // voteCount[address][voteName][candidate]++
+
+        voters[voteName][addr] = true;
         
         return "Vote successful casted!";
 
@@ -55,7 +64,7 @@ contract Vote {
 
             string memory candidateName = candidates[i];
             uint votes =  voteCount[voteName][candidateName];
-
+            
             result[i] = Candidate(candidateName, votes);
 
         }
@@ -65,9 +74,15 @@ contract Vote {
 
    }
 
-    function getCandidates(string memory voteName) public view returns(string[] memory){
+    function addAddress(address addr, string memory voteName) public returns(string memory){
 
-        return candidateVote[voteName];
+        voters[voteName][addr] = true;
+        return "add successful!";
 
+    }
+
+    function getAddress(string memory voteName,address addr) public view returns(bool){
+        
+        return voters[voteName][addr];
     }
 }
