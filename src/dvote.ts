@@ -182,15 +182,6 @@ class Dvote {
  
      }
 
-     test(voteName:string, candidate:any, fromAccount:any){
-      
-      
-       this.contractEther.createVote(voteName, candidate,fromAccount).then(function(res){
-        console.log(res)
-      })
-
-     }
-
 
   }
   

@@ -10,7 +10,7 @@ export function voteResult(web3:any, contract:any, abi: any,contractAddress:any,
 
         }).catch(function(error:any){
                
-                return error;
+                return ("Error: " + error.reason);
                 
         });
         
