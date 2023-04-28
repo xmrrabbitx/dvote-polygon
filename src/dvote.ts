@@ -2,7 +2,7 @@ var path = require("path")
 var fs = require("fs")
 var solc = require("solc")
 var Web3 = require('web3')
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider")
 
 import{ createVote } from "./Methods/createVote"
 import{ addVote } from "./Methods/addVote"
@@ -21,14 +21,18 @@ class Dvote {
     private provider:any
     private accounts:any
     private web3:any
+    private ether:any
     private contractAddress:any
     private abi:any
     private contract:any
+    private contractEther:any
+    private signer:any
 
     constructor(mnemonic:any, endpointUrl:any){
       
       this.provider = new HDWalletProvider(mnemonic, endpointUrl)
       this.web3 = new Web3(Web3.givenProvider || this.provider)
+      
 
       const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
 
@@ -41,7 +45,9 @@ class Dvote {
         this.contractAddress = voteJson['address']
         this.abi = voteJson['jsonInterface']
 
-        this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress)
+        this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress,{handleRevert: true})
+        
+
       }
      
        
@@ -85,44 +91,87 @@ class Dvote {
     }
 
     deploy(fromAccount: any, abi: any, bytecode:any){
-      
-      var contract = new this.web3.eth.Contract(abi)
-      contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
-        gasPrice: '30000000000',}).then(function(result: { options: any }){
 
-         result.options['ByteCode'] = this.compile().bytecode();
+      return new Promise((resolve, reject) => {
+        const deployContract = ()=>{
+        
+          var contract = new this.web3.eth.Contract(abi)
+          contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
+            gasPrice: '30000000000',}).then(function(result: { options: any }){
+              
+            result.options['ByteCode'] = this.compile().bytecode();
+              
+              fs.writeFile("build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
+                if (err) throw err
+                else resolve("deployed contract Saved into Vote.json file")
+              })
+
+          }.bind(this)) 
+         
           
-          fs.writeFile("build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
-            if (err) throw err
-            else return 'Saved!'
-          })
+        }
+        
+        if(typeof this.contractAddress === "undefined"){
+          
+          return deployContract();
+          
+        }else{
+        
+          this.web3.eth.getCode(this.contractAddress, (error, code) => {
 
-        }.bind(this))  
+            if (error) {
 
+                  return error;
+
+            } else if (code === '0x') {
+              
+                  return deployContract();
+
+            } else {
+                 
+                  resolve(`the Contract already deployed and exists at address ${this.contractAddress}`);
+
+            }
+          });
+        
+        }
+      
+      })
+
+ 
+      
     }
 
     createVote(voteName:string, candidate:any, fromAccount:any){
        
-      createVote(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+      return new Promise((resolve,reject)=>{
 
-        console.log(result)
+        createVote(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
 
-      }).catch(error=>{
+          resolve(result)
 
-        console.log(error)
+        }).catch(error=>{
+
+          reject(error)
+        })
+
       })
 
     }
 
-    addVote(voteName:string, candidate:any, fromAccount:any){
+    addVote(voteName:string, candidate:string, fromAccount:any){
 
-      addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+      return new Promise((resolve,reject)=>{
 
-        console.log(result)
+        addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAccount).then(result=>{
 
-      }).catch(error=>{
+          resolve(result)
 
-        console.log(error)
+        }).catch(error=>{
+
+          reject(error)
+        })
+
       })
 
     }
@@ -131,6 +180,15 @@ class Dvote {
 
       return voteResult(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
  
+     }
+
+     test(voteName:string, candidate:any, fromAccount:any){
+      
+      
+       this.contractEther.createVote(voteName, candidate,fromAccount).then(function(res){
+        console.log(res)
+      })
+
      }
 
 

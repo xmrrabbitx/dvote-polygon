@@ -30,6 +30,7 @@ contract Vote {
 
         require(bytes(voteName).length > 0, "you must set a name for your voting.");
         require(candidateOption.length > 0, "Candidate options cannot be empty.");
+        require(candidateVote[voteName].length == 0,"the Vote already existed!");
         
         candidateVote[voteName] = candidateOption;
 
@@ -55,7 +56,8 @@ contract Vote {
     }
 
     function voteResult(string memory voteName) public view returns( Candidate[] memory){
-  
+        
+        require(bytes(voteName).length > 0, "Vote name cannot be empty");
         string[] memory candidates = candidateVote[voteName];
         Candidate[] memory result = new Candidate[](candidates.length);
 
@@ -74,15 +76,15 @@ contract Vote {
 
    }
 
-    function addAddress(address addr, string memory voteName) public returns(string memory){
+    function lvm(string memory voteName) public view returns(uint){
 
-        voters[voteName][addr] = true;
-        return "add successful!";
+        return candidateVote[voteName].length;
 
     }
 
-    function getAddress(string memory voteName,address addr) public view returns(bool){
+    function test() public pure returns(string memory){
+
+        return "xmrrabbitx";
         
-        return voters[voteName][addr];
     }
 }
