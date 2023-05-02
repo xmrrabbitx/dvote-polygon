@@ -1,7 +1,7 @@
-var path = require("path")
-var fs = require("fs")
-var solc = require("solc")
-var Web3 = require('web3')
+const path = require("path")
+const fs = require("fs")
+const solc = require("solc")
+const Web3 = require('web3')
 const HDWalletProvider = require("@truffle/hdwallet-provider")
 
 import{ createVote } from "./Methods/createVote"
@@ -159,11 +159,11 @@ class Dvote {
 
     }
 
-    addVote(voteName:string, candidate:string, fromAccount:any){
+    addVote(voteName:string, candidate:string, fromAddress:any){
 
       return new Promise((resolve,reject)=>{
 
-        addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+        addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
 
           resolve(result)
 

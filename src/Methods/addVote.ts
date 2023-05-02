@@ -1,11 +1,11 @@
 
 
-export function addVote(web3:any, contract:any, abi: any,contractAddress:any,voteName:string, candidate:any, fromAccount:any){
-  
+export function addVote(web3:any, contract:any, abi: any, contractAddress:any, voteName:string, candidate:any, fromAddress:string){
+
         return new Promise((resolve, reject) => {
                 
-                contract.methods.addVote(voteName, candidate, fromAccount).send({
-                        from: fromAccount,
+                contract.methods.addVote(voteName, candidate, fromAddress).send({
+                        from: fromAddress,
                         gas: 3000000,
                        }).on("confirmation",function(confirmBlock,receipt){
                                 
@@ -19,8 +19,6 @@ export function addVote(web3:any, contract:any, abi: any,contractAddress:any,vot
                         });
                        
                         
-                        
-                
                 
         })
 }
