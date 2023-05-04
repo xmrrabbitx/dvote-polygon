@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "jest --detectOpenHandles --runInBand --testPathPattern='./**/connection.test.ts' --testPathPattern='./**/compile.test.ts' --forceExit ",
+    "test": "jest --detectOpenHandles --runInBand --forceExit all-tests.ts ",
     "start": "npx nodemon --ignore *.json app.ts"
   },
   "author": "xmrrabbitx",

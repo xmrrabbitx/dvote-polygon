@@ -14,8 +14,9 @@ const votePath = path.resolve(__dirname,"../build/contracts","Vote-test.json")
 
 const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:8545")
 
-let  contract:any, contractAddress:any, abi:any;
+let contract:any = null, contractAddress:any=null, abi:any=null;
 
+function loadContract(){
   if (fs.existsSync(votePath)){
 
           const source  = fs.readFileSync(votePath,"UTF-8")
@@ -29,6 +30,7 @@ let  contract:any, contractAddress:any, abi:any;
           
        
   }
+}
 
-export { dv, web3, contract, abi, contractAddress };
+export { dv, web3, contract, abi, contractAddress, loadContract };
 
