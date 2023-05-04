@@ -4,7 +4,7 @@ export  function createVote(web3:any, contract:any, abi:any, contractAddress:any
        
     return new Promise((resolve, reject) => {
         
-        contract.methods.createVote(voteName, candidate).send({from:fromAccount,gas: 3000000, handleRevert:true})
+        contract.methods.createVote(voteName, candidate).send({from:fromAccount,gas: 3000000})
         
         
             .on('confirmation', function(confirmationNumber, receipt){

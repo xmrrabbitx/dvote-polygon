@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles --runInBand --testPathPattern='./**/connection.test.ts' --testPathPattern='./**/compile.test.ts' --forceExit ",
     "start": "npx nodemon --ignore *.json app.ts"
   },
   "author": "xmrrabbitx",
@@ -15,11 +15,14 @@
   "dependencies": {
     "@truffle/hdwallet-provider": "^2.1.10",
     "@types/express": "^4.17.17",
+    "bip39": "^3.1.0",
+    "dotenv": "^16.0.3",
     "eth-revert-reason": "^1.0.3",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
+    "randomstring": "^1.2.3",
     "solc": "^0.8.19",
     "ts-node": "^10.9.1",
     "web3": "^1.9.0",
@@ -30,8 +33,10 @@
     "polygon"
   ],
   "devDependencies": {
+    "@jest/types": "^29.5.0",
     "@types/jest": "^29.5.1",
     "jest": "^29.5.0",
+    "jest-serial-runner": "^1.2.1",
     "nodemon": "^2.0.22",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"

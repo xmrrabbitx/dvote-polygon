@@ -2,4 +2,8 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+ 
+  
+  // testSequencer: "./test/custome-sequencer.ts",
+
 };

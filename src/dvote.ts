@@ -8,7 +8,7 @@ import{ createVote } from "./Methods/createVote"
 import{ addVote } from "./Methods/addVote"
 import{ voteResult } from "./Methods/voteResult"
 
-interface compiledContract {
+interface CompiledContract {
 
   abi:()=>Array<JSON>,
   bytecode:()=>string
@@ -27,12 +27,14 @@ class Dvote {
     private contract:any
     private contractEther:any
     private signer:any
+    private development:boolean
 
     constructor(mnemonic:any, endpointUrl:any){
       
       this.provider = new HDWalletProvider(mnemonic, endpointUrl)
       this.web3 = new Web3(Web3.givenProvider || this.provider)
-      
+
+      this.development = false
 
       const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
 
@@ -52,7 +54,7 @@ class Dvote {
      
        
     }
-    compile():compiledContract{
+    compile():CompiledContract{
       const craw = path.resolve(__dirname,"../contracts","Vote.sol")
 
       const source  = fs.readFileSync(craw,"UTF-8")
@@ -79,6 +81,7 @@ class Dvote {
         abi:function(){ 
 
           return compiledContract['contracts']['Vote.sol']['Vote']['abi']
+          
 
         },
         bytecode:function(){
@@ -96,17 +99,27 @@ class Dvote {
         const deployContract = ()=>{
         
           var contract = new this.web3.eth.Contract(abi)
+
           contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
-            gasPrice: '30000000000',}).then(function(result: { options: any }){
+            gasPrice: '30000000000'}).then(function(result: { options: any }){
               
             result.options['ByteCode'] = this.compile().bytecode();
               
+            if(this.development){
+              fs.writeFile("build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
+                if (err) throw err
+                else resolve("deployed contract Saved into Vote-test.json file")
+              })
+            }else{
               fs.writeFile("build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote.json file")
               })
+            }
+          }.bind(this)).catch(error=>{
 
-          }.bind(this)) 
+            return error
+          })
          
           
         }
@@ -116,24 +129,25 @@ class Dvote {
           return deployContract();
           
         }else{
-        
-          this.web3.eth.getCode(this.contractAddress, (error, code) => {
+          
+          if(!this.development){
+            this.web3.eth.getCode(this.contractAddress, (error, code) => {
 
-            if (error) {
+              if (error) {
 
-                  return error;
+                    return error;
 
-            } else if (code === '0x') {
-              
-                  return deployContract();
+              } else if (code === '0x') {
+                
+                    return deployContract();
 
-            } else {
-                 
-                  resolve(`the Contract already deployed and exists at address ${this.contractAddress}`);
+              } else {
+                  
+                    resolve(`the Contract already deployed and exists at address ${this.contractAddress}`);
 
-            }
-          });
-        
+              }
+            });
+          }
         }
       
       })
