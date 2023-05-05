@@ -18,7 +18,7 @@ test('test 3: createVote testing', async () => {
        candidateName = [randomstring.generate(7),randomstring.generate(7),randomstring.generate(7)];
 
       const data = await createVote(web3, contract, abi, contractAddress, voteName, candidateName, fromAddress[0])
-        console.log(data)
+
         let receipt:any = data
         let jsonStr = receipt.substring(receipt.indexOf('{'), receipt.lastIndexOf('}') + 1)
         let receiptJsonObj = JSON.parse(jsonStr)

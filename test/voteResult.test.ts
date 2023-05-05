@@ -9,7 +9,7 @@ test('test 5: voteResult testing', async () => {
       let fromAddress = await web3.eth.getAccounts()
 
       const data = await voteResult(web3, contract, abi, contractAddress, voteName, fromAddress[0])
- 
+
       expect(data).toBeInstanceOf(Array)
 
       fs.unlink("build/contracts/Vote-test.json", (err) => {
