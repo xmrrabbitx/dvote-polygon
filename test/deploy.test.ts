@@ -2,8 +2,7 @@ import { dv, web3, contract, abi, contractAddress  } from "./config";
 
 beforeEach(() => {
       jest.resetModules();
-      console.log(contract)
-    });
+});
 
 test('test 2: deploy testing', async () => {
      

@@ -30,8 +30,13 @@ class Dvote {
     private development:boolean
 
     constructor(mnemonic:any, endpointUrl:any){
-      
-      this.provider = new HDWalletProvider(mnemonic, endpointUrl)
+
+      if(mnemonic == null){ 
+        this.provider = endpointUrl
+      }else{
+        this.provider = new HDWalletProvider(mnemonic, endpointUrl)
+      }
+
       this.web3 = new Web3(Web3.givenProvider || this.provider)
 
       this.development = false
