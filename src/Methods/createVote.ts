@@ -1,4 +1,3 @@
-import { json } from "express"
 
 export  function createVote(web3:any, contract:any, abi:any, contractAddress:any, voteName:string, candidate:any, fromAccount:any){
        

@@ -4,9 +4,14 @@ const solc = require("solc")
 const Web3 = require('web3')
 const HDWalletProvider = require("@truffle/hdwallet-provider")
 
+/*
 import{ createVote } from "./Methods/createVote"
 import{ addVote } from "./Methods/addVote"
 import{ voteResult } from "./Methods/voteResult"
+*/
+const createVote = require("./Methods/createVote")
+const addVote = require("./Methods/addVote")
+const voteResult = require("./Methods/voteResult")
 
 interface CompiledContract {
 
