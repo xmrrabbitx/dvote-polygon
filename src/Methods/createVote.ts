@@ -1,5 +1,5 @@
 
-export  function createVote(web3:any, contract:any, abi:any, contractAddress:any, voteName:string, candidate:any, fromAccount:any){
+export function createVoteCall(web3:any, contract:any, abi:any, contractAddress:any, voteName:string, candidate:any, fromAccount:any){
        
     return new Promise((resolve, reject) => {
         
@@ -19,4 +19,3 @@ export  function createVote(web3:any, contract:any, abi:any, contractAddress:any
             })
     })
 }
-

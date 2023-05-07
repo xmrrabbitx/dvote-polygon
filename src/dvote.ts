@@ -4,16 +4,11 @@ const solc = require("solc")
 const Web3 = require('web3')
 const HDWalletProvider = require("@truffle/hdwallet-provider")
 
-/*
-import{ createVote } from "./Methods/createVote"
-import{ addVote } from "./Methods/addVote"
-import{ voteResult } from "./Methods/voteResult"
-*/
-const createVote = require("./Methods/createVote")
-const addVote = require("./Methods/addVote")
-const voteResult = require("./Methods/voteResult")
+import{ createVoteCall } from "./Methods/createVote"
+import{ addVoteCall } from "./Methods/addVote"
+import{ voteResultCall } from "./Methods/voteResult"
 
-interface CompiledContract {
+export interface CompiledContract {
 
   abi:()=>Array<JSON>,
   bytecode:()=>string
@@ -21,7 +16,7 @@ interface CompiledContract {
 }
 
 
-class Dvote {
+export class Dvote {
        
     private provider:any
     private accounts:any
@@ -111,7 +106,7 @@ class Dvote {
           var contract = new this.web3.eth.Contract(abi)
 
           contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
-            gasPrice: '30000000000'}).then(function(result: { options: any }){
+            gasPrice: '30000000000'}).then(function(this:Dvote,result: { options: any }){
               
             result.options['ByteCode'] = this.compile().bytecode();
               
@@ -141,7 +136,7 @@ class Dvote {
         }else{
           
           if(!this.development){
-            this.web3.eth.getCode(this.contractAddress, (error, code) => {
+            this.web3.eth.getCode(this.contractAddress, (error:any, code:any) => {
 
               if (error) {
 
@@ -170,7 +165,7 @@ class Dvote {
        
       return new Promise((resolve,reject)=>{
 
-        createVote(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+        createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
 
           resolve(result)
 
@@ -187,7 +182,7 @@ class Dvote {
 
       return new Promise((resolve,reject)=>{
 
-        addVote(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
+        addVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
 
           resolve(result)
 
@@ -202,12 +197,10 @@ class Dvote {
 
     voteResult(voteName:string, fromAccount:any){
 
-      return voteResult(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
+      return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
  
      }
 
 
   }
-  
-module.exports = Dvote;
   
