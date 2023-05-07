@@ -20,14 +20,14 @@ export class Dvote {
        
     private provider:any
     private accounts:any
-    private web3:any
+    public web3:any
     private ether:any
     private contractAddress:any
     private abi:any
     private contract:any
     private contractEther:any
     private signer:any
-    private development:boolean
+    public development:boolean
 
     constructor(mnemonic:any, endpointUrl:any){
 
@@ -111,17 +111,17 @@ export class Dvote {
             result.options['ByteCode'] = this.compile().bytecode();
               
             if(this.development){
-              fs.writeFile("build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
+              fs.writeFile("node_modules/dvote-polygon/build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote-test.json file")
               })
             }else{
-              fs.writeFile("build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
+              fs.writeFile("node_modules/dvote-polygon/build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote.json file")
               })
             }
-          }.bind(this)).catch(error=>{
+          }.bind(this)).catch((error:any)=>{
 
             return error
           })
@@ -169,7 +169,7 @@ export class Dvote {
 
           resolve(result)
 
-        }).catch(error=>{
+        }).catch((error:any)=>{
 
           reject(error)
         })
@@ -186,7 +186,7 @@ export class Dvote {
 
           resolve(result)
 
-        }).catch(error=>{
+        }).catch((error:any)=>{
 
           reject(error)
         })

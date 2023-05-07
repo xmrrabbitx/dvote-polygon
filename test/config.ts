@@ -1,11 +1,11 @@
 const Web3 = require("web3")
 const path = require("path")
 const fs = require("fs")
-const dvote = require("../src/Dvote")
+import {Dvote} from "../src/dvote"
 
 const mnemonic = null
 
-const dv = new dvote(mnemonic,"http://127.0.0.1:8545")
+const dv = new Dvote(mnemonic,"http://127.0.0.1:8545")
 
 dv.development = true
 
