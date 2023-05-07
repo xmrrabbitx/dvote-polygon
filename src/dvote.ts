@@ -111,7 +111,7 @@ export class Dvote {
             result.options['ByteCode'] = this.compile().bytecode();
               
             if(this.development){
-              fs.writeFile("node_modules/dvote-polygon/build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
+              fs.writeFile("build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote-test.json file")
               })
