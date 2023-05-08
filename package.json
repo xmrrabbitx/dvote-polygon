@@ -27,7 +27,8 @@
   "keywords": [
     "dapp",
     "polygon",
-    "solidity"
+    "solidity",
+    "avalanche"
   ],
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.5",
