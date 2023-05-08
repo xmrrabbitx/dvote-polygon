@@ -1,8 +1,12 @@
 {
   "name": "dvote-polygon",
   "version": "1.0.0",
-  "description": "a dapp voting library integrated into polygon network",
+  "description": "A Dapp Voting Library Integrated into Polygon Network",
   "main": "src/dvote.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xmrrabbitx/dvote-polygon"
+  },
   "directories": {
     "test": "test"
   },
@@ -22,13 +26,18 @@
     "solc": "^0.8.19",
     "ts-node": "^10.9.1",
     "web3": "^1.8.0",
-    "web3-errors": "^0.1.0-alpha.0"
+    "web3-errors": "^0.1.0-alpha.0",
+    "typescript": "^5.0.4"
   },
   "keywords": [
-    "dapp",
+    "dvote",
     "polygon",
     "solidity",
-    "avalanche"
+    "avalanche",
+    "dapp",
+    "typescript",
+    "nodejs",
+    "smart contract"
   ],
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.5",
@@ -37,7 +46,6 @@
     "@types/mocha": "^10.0.1",
     "jest": "^29.5.0",
     "jest-serial-runner": "^1.2.1",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.0.4"
+    "ts-jest": "^29.1.0"
   }
 }
