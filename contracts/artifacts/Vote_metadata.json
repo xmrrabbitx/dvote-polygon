@@ -120,6 +120,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "test",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "string",
@@ -227,11 +240,11 @@
 	},
 	"sources": {
 		"contracts/Vote.sol": {
-			"keccak256": "0xcdf835a8c22a528d8ba00d7f5bd6ebab8680fe9dc9345892dbc091f8778363f1",
+			"keccak256": "0x82233cece85187a03af96dee08ea0a277c0c5ef9ccbfa839e9fa7c1d3ed81ebe",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://49733130b366a6c02357cf9eade198e501d850bcbb0b533af81b664011d9a64c",
-				"dweb:/ipfs/QmUw39xCazsZEL8rEV88RNxyyh4N5WaG87gPDbkcGtLKTR"
+				"bzz-raw://498320a385d10f368c95abceaf016654f8916d34531ece0bc9e010225d9b847c",
+				"dweb:/ipfs/QmVD9dkpmXrFxKXBC3Cg9xFFyJdvDUceJnWdzkeJZxzZQQ"
 			]
 		}
 	},

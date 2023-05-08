@@ -21,7 +21,7 @@
     "randomstring": "^1.2.3",
     "solc": "^0.8.19",
     "ts-node": "^10.9.1",
-    "web3": "^1.9.0",
+    "web3": "^1.8.0",
     "web3-errors": "^0.1.0-alpha.0"
   },
   "keywords": [
@@ -30,6 +30,7 @@
     "solidity"
   ],
   "devDependencies": {
+    "@babel/preset-typescript": "^7.21.5",
     "@jest/types": "^29.5.0",
     "@types/jest": "^29.5.1",
     "@types/mocha": "^10.0.1",

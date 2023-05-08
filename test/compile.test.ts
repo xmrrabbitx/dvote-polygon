@@ -9,7 +9,6 @@ test('test 1: compile testing', async () => {
 
    let bytecode = dv.compile().bytecode()
 
-   expect(bytecode.length).toEqual(13592)
-
+   expect(bytecode.length).toEqual(13186)
 
 })

@@ -38,7 +38,7 @@ export class Dvote {
       }
 
       this.web3 = new Web3(Web3.givenProvider || this.provider)
-
+ 
       this.development = false
 
       const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
@@ -104,26 +104,30 @@ export class Dvote {
         const deployContract = ()=>{
         
           var contract = new this.web3.eth.Contract(abi)
-
+          
           contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
             gasPrice: '30000000000'}).then(function(this:Dvote,result: { options: any }){
               
             result.options['ByteCode'] = this.compile().bytecode();
               
             if(this.development){
-              fs.writeFile("build/contracts/Vote-test.json",JSON.stringify(result.options),function (err: any) {
+              
+              const filepath = path.resolve(__dirname, '../build/contracts/Vote-test.json');
+              fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote-test.json file")
               })
             }else{
-              fs.writeFile("node_modules/dvote-polygon/build/contracts/Vote.json",JSON.stringify(result.options),function (err: any) {
+              
+              const filepath = path.resolve(__dirname, '../build/contracts/Vote.json');
+              fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote.json file")
               })
             }
           }.bind(this)).catch((error:any)=>{
 
-            return error
+              reject(error)
           })
          
           
@@ -136,11 +140,12 @@ export class Dvote {
         }else{
           
           if(!this.development){
+
             this.web3.eth.getCode(this.contractAddress, (error:any, code:any) => {
 
               if (error) {
 
-                    return error;
+                    reject(error)
 
               } else if (code === '0x') {
                 
@@ -152,6 +157,8 @@ export class Dvote {
 
               }
             });
+          }else{
+            return  deployContract();
           }
         }
       

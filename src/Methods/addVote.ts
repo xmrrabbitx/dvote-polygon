@@ -7,18 +7,14 @@ export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:an
                 contract.methods.addVote(voteName, candidate, fromAddress).send({
                         from: fromAddress,
                         gas: 3000000,
-                       }).on("confirmation",function(confirmationNumber:number, receipt:any){
-                                
-                                resolve("successful transaction: " +  JSON.stringify(receipt))
-
-                       })
-                       .on('error', function(error:any, receipt:any){ 
-                                
-                                reject("Error: " + error.reason)
-                                
-                        });
-                       
-                        
+                       }).on('error', function(error:any, receipt:any) {
                 
+                        reject("Error: " + error.reason)
+                         
+                    }).on('receipt', function(receipt:any){
+            
+                        resolve("successful transaction: " + JSON.stringify(receipt)) 
+                        
+                    })
         })
 }

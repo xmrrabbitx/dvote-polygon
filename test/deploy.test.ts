@@ -15,4 +15,4 @@ test('test 2: deploy testing', async () => {
       
       expect(deploy).toMatch("deployed contract Saved into Vote-test.json file");
 
-}, 70000)
+},70000)

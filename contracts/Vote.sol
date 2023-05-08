@@ -9,7 +9,6 @@ contract Vote {
  
     address public myaddress;
 
-
     struct Candidate {
         string name;
         uint votes;
@@ -30,7 +29,7 @@ contract Vote {
 
         require(bytes(voteName).length > 0, "you must set a name for your voting.");
         require(candidateOption.length > 0, "Candidate options cannot be empty.");
-        require(candidateVote[voteName].length == 0,"the Vote already existed!");
+        require(candidateVote[voteName].length == 0,"the Poll already existed!");
         
         candidateVote[voteName] = candidateOption;
 
@@ -43,12 +42,11 @@ contract Vote {
     function addVote(string memory voteName, string memory candidate, address addr) public returns(string memory){
 
         require(candidateVote[voteName].length > 0, "Vote does not exist.");
-        // require(voteCount[voteName][candidate] == 0, "You have already voted for this candidate.");
+        
         require(!voters[voteName][addr], "Address has already voted!");
 
         voteCount[voteName][candidate]++;
-        // voteCount[address][voteName][candidate]++
-
+        
         voters[voteName][addr] = true;
         
         return "Vote successful casted!";
@@ -72,19 +70,6 @@ contract Vote {
         }
 
         return result;
-    
 
    }
-
-    function lvm(string memory voteName) public view returns(uint){
-
-        return candidateVote[voteName].length;
-
-    }
-
-    function test() public pure returns(string memory){
-
-        return "xmrrabbitx";
-        
-    }
 }
