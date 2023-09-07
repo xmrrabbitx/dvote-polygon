@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-      "target": "es6",
+      "target": "es5",
       "module": "commonjs",
       "sourceMap": true,
-      "outDir": "./dist",
+      "outDir": "./lib",
       "rootDir": "./src",
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "moduleResolution": "node" 
     },
-    "include": ["./src/**/*", "test/sum.ts"]
+    "include": ["./src/**/*", "test/sum.ts", "./src.Methods/a.d.ts"]
 }
   

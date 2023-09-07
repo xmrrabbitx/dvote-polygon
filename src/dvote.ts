@@ -30,7 +30,7 @@ export class Dvote {
     public development:boolean
 
     constructor(mnemonic:any, endpointUrl:any){
-
+   
       if(mnemonic == null){ 
         this.provider = endpointUrl
       }else{
@@ -40,7 +40,7 @@ export class Dvote {
       this.web3 = new Web3(Web3.givenProvider || this.provider)
  
       this.development = false
-
+      
       const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
 
       if (fs.existsSync(votePath)){
@@ -59,7 +59,8 @@ export class Dvote {
      
        
     }
-    compile():CompiledContract{
+    compile():CompiledContract{ 
+      
       const craw = path.resolve(__dirname,"../contracts","Vote.sol")
 
       const source  = fs.readFileSync(craw,"UTF-8")
