@@ -1,6 +1,6 @@
 
 
-export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:any, voteName:string, candidate:any, fromAddress:string){
+export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:string, voteName:string, candidate:string, fromAddress:string){
 
         return new Promise((resolve, reject) => {
                 

@@ -11,7 +11,6 @@ var addVote_1 = require("./Methods/addVote");
 var voteResult_1 = require("./Methods/voteResult");
 var Dvote = /** @class */ (function () {
     function Dvote(mnemonic, endpointUrl) {
-        console.log("start");
         if (mnemonic == null) {
             this.provider = endpointUrl;
         }
@@ -20,7 +19,7 @@ var Dvote = /** @class */ (function () {
         }
         this.web3 = new Web3(Web3.givenProvider || this.provider);
         this.development = false;
-        var votePath = path.resolve(__dirname, "../build/contracts", "Vote.json");
+        var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
         if (fs.existsSync(votePath)) {
             var source = fs.readFileSync(votePath, "UTF-8");
             var voteJson = JSON.parse(source);
@@ -30,9 +29,8 @@ var Dvote = /** @class */ (function () {
         }
     }
     Dvote.prototype.compile = function () {
-        console.log(__dirname);
-        var craw = path.resolve(__dirname, "../contracts", "Vote.sol");
-        var source = fs.readFileSync(craw, "UTF-8");
+        var solPath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.sol");
+        var source = fs.readFileSync(solPath, "UTF-8");
         var input = {
             language: 'Solidity',
             sources: {
@@ -67,16 +65,16 @@ var Dvote = /** @class */ (function () {
                     gasPrice: '30000000000' }).then(function (result) {
                     result.options['ByteCode'] = this.compile().bytecode();
                     if (this.development) {
-                        var filepath = path.resolve(__dirname, '../build/contracts/Vote-test.json');
+                        var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
                         fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
                             if (err)
                                 throw err;
                             else
-                                resolve("deployed contract Saved into Vote-test.json file");
+                                resolve("deployed contract Saved into Vote.json file");
                         });
                     }
                     else {
-                        var filepath = path.resolve(__dirname, '../build/contracts/Vote.json');
+                        var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
                         fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
                             if (err)
                                 throw err;

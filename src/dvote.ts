@@ -41,7 +41,7 @@ export class Dvote {
  
       this.development = false
       
-      const votePath = path.resolve(__dirname,"../build/contracts","Vote.json")
+      const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
 
       if (fs.existsSync(votePath)){
         const source  = fs.readFileSync(votePath,"UTF-8")
@@ -61,9 +61,8 @@ export class Dvote {
     }
     compile():CompiledContract{ 
       
-      const craw = path.resolve(__dirname,"../contracts","Vote.sol")
-
-      const source  = fs.readFileSync(craw,"UTF-8")
+      const solPath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.sol")
+      const source  = fs.readFileSync(solPath,"UTF-8")
 
       const input = {
         language: 'Solidity',
@@ -80,7 +79,7 @@ export class Dvote {
           },
         },
       };
-
+      
       const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
 
       return {
@@ -98,9 +97,9 @@ export class Dvote {
      
       }
     }
-
-    deploy(fromAccount: any, abi: any, bytecode:any){
-
+    
+    deploy(fromAccount: string, abi: any, bytecode:string){
+      
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
         
@@ -112,15 +111,15 @@ export class Dvote {
             result.options['ByteCode'] = this.compile().bytecode();
               
             if(this.development){
-              
-              const filepath = path.resolve(__dirname, '../build/contracts/Vote-test.json');
+
+              const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
               fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
-                else resolve("deployed contract Saved into Vote-test.json file")
+                else resolve("deployed contract Saved into Vote.json file")
               })
             }else{
               
-              const filepath = path.resolve(__dirname, '../build/contracts/Vote.json');
+              const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
               fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
                 if (err) throw err
                 else resolve("deployed contract Saved into Vote.json file")
@@ -169,10 +168,10 @@ export class Dvote {
       
     }
 
-    createVote(voteName:string, candidate:any, fromAccount:any){
+    createVote(voteName:string, candidate:string[], fromAccount:string){
        
       return new Promise((resolve,reject)=>{
-
+        
         createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
 
           resolve(result)
@@ -186,7 +185,7 @@ export class Dvote {
 
     }
 
-    addVote(voteName:string, candidate:string, fromAddress:any){
+    addVote(voteName:string, candidate:string, fromAddress:string){
 
       return new Promise((resolve,reject)=>{
 
@@ -203,7 +202,7 @@ export class Dvote {
 
     }
 
-    voteResult(voteName:string, fromAccount:any){
+    voteResult(voteName:string, fromAccount:string){
 
       return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
  
