@@ -61,7 +61,7 @@ dv.createVote(voteName, voteOptions).then(data=>{
 ### Add Vote
 #### there are 3 params, all of them are string type.
 ```js
-let fromAddress = "any Wallet Address"
+let fromAddress = "any User Wallet Address"
 let voteName = "EBAY"
 let voteOptions = "perfect"
 
@@ -73,7 +73,7 @@ dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 ```
 
 ### Vote Result
-####
+#### show the result of voting - just admin can access this
 ```js
 let voteName = "EBAY"
 
