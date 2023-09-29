@@ -12,8 +12,8 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.voteResultCall = void 0;
-function voteResultCall(web3, contract, abi, contractAddress, voteName, fromAccount) {
-    return contract.methods.voteResult(voteName).call({ from: fromAccount }).then(function (result) {
+function voteResultCall(web3, contract, abi, contractAddress, voteName, adminAccount) {
+    return contract.methods.voteResult(voteName).call({ from: adminAccount }).then(function (result) {
         var outputFilter = result.map(function (_a) {
             var name = _a[0], votes = _a[1], rest = _a[2];
             return (__assign({ name: name, votes: votes }, rest));

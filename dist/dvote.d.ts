@@ -4,7 +4,8 @@ export interface CompiledContract {
 }
 export declare class Dvote {
     private provider;
-    private accounts;
+    accounts: any;
+    adminAccount: string;
     web3: any;
     private ether;
     private contractAddress;
@@ -13,11 +14,12 @@ export declare class Dvote {
     private contractEther;
     private signer;
     development: boolean;
-    constructor(mnemonic: any, endpointUrl: any);
+    constructor(account: string, endpointUrl: string);
     compile(): CompiledContract;
-    deploy(fromAccount: string, abi: any, bytecode: string): Promise<unknown>;
-    createVote(voteName: string, candidate: string[], fromAccount: string): Promise<unknown>;
+    deploy(abi: any, bytecode: string): Promise<unknown>;
+    createVote(voteName: string, candidate: string[]): Promise<unknown>;
     addVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
-    voteResult(voteName: string, fromAccount: string): any;
+    changeVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
+    voteResult(voteName: string): any;
 }
 //# sourceMappingURL=dvote.d.ts.map

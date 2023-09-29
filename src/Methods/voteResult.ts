@@ -1,7 +1,7 @@
 
-export function voteResultCall(web3:any, contract:any, abi: any,contractAddress:string,voteName:string, fromAccount:string){
+export function voteResultCall(web3:any, contract:any, abi: any,contractAddress:string,voteName:string, adminAccount:string){
         
-        return contract.methods.voteResult(voteName).call({from:fromAccount}).then(function(result:any){
+        return contract.methods.voteResult(voteName).call({from:adminAccount}).then(function(result:any){
                
                 const outputFilter = result.map(([name, votes, rest]:[string,string,[key:string]]) => ({ name, votes, ...rest }));
 

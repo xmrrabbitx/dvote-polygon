@@ -53,6 +53,16 @@ contract Vote {
 
     }
 
+    function changeVote(string memory voteName, string memory candidate, address addr) public returns (string memory) {
+       
+        require(candidateVote[voteName].length > 0, "Vote does not exist.");
+
+        require(!voters[voteName][addr], "Address has already voted!");
+
+        return "Vote changing casted!";
+    }
+
+
     function voteResult(string memory voteName) public view returns( Candidate[] memory){
         
         require(bytes(voteName).length > 0, "Vote name cannot be empty");

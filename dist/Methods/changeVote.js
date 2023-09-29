@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addVoteCall = void 0;
-function addVoteCall(web3, contract, abi, contractAddress, voteName, candidate, fromAddress, adminAccount) {
+exports.changeVoteCall = void 0;
+function changeVoteCall(web3, contract, abi, contractAddress, voteName, candidate, fromAddress) {
     return new Promise(function (resolve, reject) {
-        contract.methods.addVote(voteName, candidate, fromAddress).send({
-            from: adminAccount,
+        contract.methods.changeVote(voteName, candidate, fromAddress).send({
+            from: fromAddress,
             gas: 3000000,
         }).on('error', function (error, receipt) {
             reject("Error: " + error.reason);
@@ -13,5 +13,5 @@ function addVoteCall(web3, contract, abi, contractAddress, voteName, candidate, 
         });
     });
 }
-exports.addVoteCall = addVoteCall;
-//# sourceMappingURL=addVote.js.map
+exports.changeVoteCall = changeVoteCall;
+//# sourceMappingURL=changeVote.js.map

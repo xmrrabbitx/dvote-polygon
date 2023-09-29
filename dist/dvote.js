@@ -9,15 +9,11 @@ var HDWalletProvider = require("@truffle/hdwallet-provider");
 var createVote_1 = require("./Methods/createVote");
 var addVote_1 = require("./Methods/addVote");
 var voteResult_1 = require("./Methods/voteResult");
+var changeVote_1 = require("./Methods/changeVote");
 var Dvote = /** @class */ (function () {
-    function Dvote(mnemonic, endpointUrl) {
-        if (mnemonic == null) {
-            this.provider = endpointUrl;
-        }
-        else {
-            this.provider = new HDWalletProvider(mnemonic, endpointUrl);
-        }
-        this.web3 = new Web3(Web3.givenProvider || this.provider);
+    function Dvote(account, endpointUrl) {
+        this.web3 = new Web3(endpointUrl);
+        this.adminAccount = account;
         this.development = false;
         var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
         if (fs.existsSync(votePath)) {
@@ -56,12 +52,12 @@ var Dvote = /** @class */ (function () {
             }
         };
     };
-    Dvote.prototype.deploy = function (fromAccount, abi, bytecode) {
+    Dvote.prototype.deploy = function (abi, bytecode) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var deployContract = function () {
                 var contract = new _this.web3.eth.Contract(abi);
-                contract.deploy({ data: bytecode }).send({ from: fromAccount, gas: 4000000,
+                contract.deploy({ data: bytecode }).send({ from: _this.adminAccount, gas: 4000000,
                     gasPrice: '30000000000' }).then(function (result) {
                     result.options['ByteCode'] = this.compile().bytecode();
                     if (this.development) {
@@ -109,10 +105,10 @@ var Dvote = /** @class */ (function () {
             }
         });
     };
-    Dvote.prototype.createVote = function (voteName, candidate, fromAccount) {
+    Dvote.prototype.createVote = function (voteName, candidate) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            (0, createVote_1.createVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAccount).then(function (result) {
+            (0, createVote_1.createVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, _this.adminAccount).then(function (result) {
                 resolve(result);
             }).catch(function (error) {
                 reject(error);
@@ -122,15 +118,25 @@ var Dvote = /** @class */ (function () {
     Dvote.prototype.addVote = function (voteName, candidate, fromAddress) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            (0, addVote_1.addVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress).then(function (result) {
+            (0, addVote_1.addVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress, _this.adminAccount).then(function (result) {
                 resolve(result);
             }).catch(function (error) {
                 reject(error);
             });
         });
     };
-    Dvote.prototype.voteResult = function (voteName, fromAccount) {
-        return (0, voteResult_1.voteResultCall)(this.web3, this.contract, this.abi, this.contractAddress, voteName, fromAccount);
+    Dvote.prototype.changeVote = function (voteName, candidate, fromAddress) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            (0, changeVote_1.changeVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress).then(function (result) {
+                resolve(result);
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    };
+    Dvote.prototype.voteResult = function (voteName) {
+        return (0, voteResult_1.voteResultCall)(this.web3, this.contract, this.abi, this.contractAddress, voteName, this.adminAccount);
     };
     return Dvote;
 }());

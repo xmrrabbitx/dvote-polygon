@@ -1,2 +1,2 @@
-export declare function createVoteCall(web3: any, contract: any, abi: any, contractAddress: string, voteName: string, candidate: string[], fromAccount: string): Promise<unknown>;
+export declare function createVoteCall(web3: any, contract: any, abi: any, contractAddress: string, voteName: string, candidate: string[], adminAccount: string): Promise<unknown>;
 //# sourceMappingURL=createVote.d.ts.map

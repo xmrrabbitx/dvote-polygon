@@ -13,7 +13,7 @@
 ### Installation
 #### type this command in CMD or Terminal
 ```bash
-npm install dvote-polygon
+
 ```
 
 ## Usage
@@ -24,10 +24,10 @@ import {Dvote}  from "dvote-polygon";
 
 ### New Instance
 ```js
-const endpoint = "http://127.0.0.1:8545" // your provider
-const mnemonic = "Mnemonic" // your wallet mnemonic
+const endpointUrl = "http://127.0.0.1:8545" // your provider
+const walletAddress = "walletAddress" // your wallet Address
 
-const dv = new Dvote(mnemonic , endpoint ) // new instance
+const dv = new Dvote(walletAddress , endpointUrl ) // new instance
 ```
 
 ### Compile
@@ -38,11 +38,9 @@ let bytecode = dv.compile().bytecode()
 
 ### Deploy 
 ```js
-let fromAddress = "Your Wallet Address"
+dv.deploy(abi, bytecode).then(data=>{
 
-dv.deploy(fromAddress, abi, bytecode).then(data=>{
-
-    console.log(data)
+   return data;
 
 })
 ```
@@ -50,13 +48,12 @@ dv.deploy(fromAddress, abi, bytecode).then(data=>{
 ### Create a Poll
 #### first parameter is the name of your Vote and second is the options of poll. second params must be the instance of Array.
 ```js
-let fromAddress = "Your Wallet Address"
 let voteName = "EBAY"
 let voteOptions = ["perfect", "good", "bad", "worst"]
 
-dv.createVote(voteName, voteOptions, fromAddress).then(data=>{
+dv.createVote(voteName, voteOptions).then(data=>{
 
-    console.log(data)
+   return data;
 
 })
 ```
@@ -64,13 +61,13 @@ dv.createVote(voteName, voteOptions, fromAddress).then(data=>{
 ### Add Vote
 #### there are 3 params, all of them are string type.
 ```js
-let fromAddress = "Your Wallet Address"
+let fromAddress = "any Wallet Address"
 let voteName = "EBAY"
 let voteOptions = "perfect"
 
 dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 
-    console.log(data)
+   return data;
     
 })
 ```
@@ -78,10 +75,9 @@ dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 ### Vote Result
 ####
 ```js
-let fromAddress = "Your Wallet Address"
 let voteName = "EBAY"
 
-dv.voteResult(voteName, fromAddress).then((data:any)=>{
+dv.voteResult(voteName).then((data:any)=>{
 
     console.log(data)
 

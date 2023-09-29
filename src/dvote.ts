@@ -7,6 +7,7 @@ const HDWalletProvider = require("@truffle/hdwallet-provider")
 import{ createVoteCall } from "./Methods/createVote"
 import{ addVoteCall } from "./Methods/addVote"
 import{ voteResultCall } from "./Methods/voteResult"
+import { changeVoteCall } from "./Methods/changeVote"
 
 export interface CompiledContract {
 
@@ -19,7 +20,8 @@ export interface CompiledContract {
 export class Dvote {
        
     private provider:any
-    private accounts:any
+    public accounts:any
+    public adminAccount:string;
     public web3:any
     private ether:any
     private contractAddress:any
@@ -29,26 +31,21 @@ export class Dvote {
     private signer:any
     public development:boolean
 
-    constructor(mnemonic:any, endpointUrl:any){
-   
-      if(mnemonic == null){ 
-        this.provider = endpointUrl
-      }else{
-        this.provider = new HDWalletProvider(mnemonic, endpointUrl)
-      }
+    constructor(account:string,endpointUrl:string){
 
-      this.web3 = new Web3(Web3.givenProvider || this.provider)
- 
+      this.web3 = new Web3(endpointUrl)
+
+      this.adminAccount = account;
+
       this.development = false
       
       const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
 
       if (fs.existsSync(votePath)){
-        const source  = fs.readFileSync(votePath,"UTF-8")
 
-        const voteJson = JSON.parse(source);
-  
-        
+        const source  = fs.readFileSync(votePath,"UTF-8")
+        const voteJson = JSON.parse(source)
+ 
         this.contractAddress = voteJson['address']
         this.abi = voteJson['jsonInterface']
 
@@ -59,6 +56,8 @@ export class Dvote {
      
        
     }
+
+
     compile():CompiledContract{ 
       
       const solPath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.sol")
@@ -98,14 +97,14 @@ export class Dvote {
       }
     }
     
-    deploy(fromAccount: string, abi: any, bytecode:string){
+    deploy(abi: any, bytecode:string){
       
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
         
           var contract = new this.web3.eth.Contract(abi)
           
-          contract.deploy({data:bytecode}).send({from:fromAccount,gas: 4000000,
+          contract.deploy({data:bytecode}).send({from:this.adminAccount,gas: 4000000,
             gasPrice: '30000000000'}).then(function(this:Dvote,result: { options: any }){
               
             result.options['ByteCode'] = this.compile().bytecode();
@@ -168,11 +167,11 @@ export class Dvote {
       
     }
 
-    createVote(voteName:string, candidate:string[], fromAccount:string){
-       
+    createVote(voteName:string, candidate:string[]){
+     
       return new Promise((resolve,reject)=>{
         
-        createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, fromAccount).then(result=>{
+        createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, this.adminAccount).then(result=>{
 
           resolve(result)
 
@@ -189,7 +188,7 @@ export class Dvote {
 
       return new Promise((resolve,reject)=>{
 
-        addVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
+        addVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress, this.adminAccount).then(result=>{
 
           resolve(result)
 
@@ -202,11 +201,27 @@ export class Dvote {
 
     }
 
-    voteResult(voteName:string, fromAccount:string){
+    changeVote(voteName:string, candidate:string, fromAddress:string){
+      return new Promise((resolve,reject)=>{
 
-      return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, fromAccount)
+        changeVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
+
+          resolve(result)
+
+        }).catch((error:any)=>{
+
+          reject(error)
+        })
+
+      })
+    }
+
+    voteResult(voteName:string){
+
+      return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, this.adminAccount)
  
      }
+
 
 
   }
