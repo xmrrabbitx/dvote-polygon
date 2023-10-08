@@ -9,9 +9,9 @@ function changeVoteCall(web3, contract, abi, contractAddress, voteName, candidat
         }).on('error', function (error, receipt) {
             reject("Error: " + error.reason);
         }).on('confirmation', function (confirmationNumber, receipt) {
-            resolve("successful transaction: " + JSON.stringify(receipt));
+            resolve("Vote changing casted: " + JSON.stringify(receipt));
         }).on('receipt', function (receipt) {
-            resolve("successful transaction: " + JSON.stringify(receipt));
+            resolve("Vote changing casted: " + JSON.stringify(receipt));
         });
     });
 }

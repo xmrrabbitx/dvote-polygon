@@ -26,7 +26,7 @@ export class Dvote {
     public web3:any
     private ether:any
     private contractAddress:any
-    private abi:any
+    private abi:Array<JSON>
     private contract:any
     private contractEther:any
     private signer:any
@@ -35,10 +35,10 @@ export class Dvote {
     private gasPrice:string
     private votePathCheck:boolean;
 
-    constructor(endpointUrl:string){
+    constructor(endpointUrl:string, renew=false){
 
       this.web3 = new Web3(endpointUrl)
-
+      
       dotenv.config();
       const privateKey = process.env.PRIVATE_KEY;
       this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
@@ -49,7 +49,7 @@ export class Dvote {
       
       const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
 
-      if (fs.existsSync(votePath)){
+      if (fs.existsSync(votePath) && !renew){
 
         const source  = fs.readFileSync(votePath,"UTF-8")
         const voteJson = JSON.parse(source)
@@ -107,7 +107,7 @@ export class Dvote {
       
     }
     
-    deploy(abi: any, bytecode:string, gasFeeOptional=null, gasPriceOptional=null){
+    deploy(abi: Array<JSON>, bytecode:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
       
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
@@ -124,10 +124,10 @@ export class Dvote {
            
             this.web3.eth.getGasPrice()
               .then((gasPrice:string) => { 
-
+ 
                 gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
                 gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
-      
+
                   contract.deploy({data:bytecode}).send({from:this.signer.address, gas: gasFee,
                     gasPrice: gasPrice}).then(function(this:Dvote, result: { options: any }){
                       
@@ -191,11 +191,7 @@ export class Dvote {
             return  deployContract();
           }
         }
-      
       })
-
- 
-      
     }
 
     createVote(voteName:string, candidate:string[]){
@@ -252,8 +248,6 @@ export class Dvote {
       return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, this.adminAccount)
  
      }
-
-
 
   }
   

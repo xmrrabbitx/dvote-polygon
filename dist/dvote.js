@@ -12,7 +12,8 @@ var addVote_1 = require("./Methods/addVote");
 var voteResult_1 = require("./Methods/voteResult");
 var changeVote_1 = require("./Methods/changeVote");
 var Dvote = /** @class */ (function () {
-    function Dvote(endpointUrl) {
+    function Dvote(endpointUrl, renew) {
+        if (renew === void 0) { renew = false; }
         this.web3 = new Web3(endpointUrl);
         dotenv.config();
         var privateKey = process.env.PRIVATE_KEY;
@@ -21,7 +22,7 @@ var Dvote = /** @class */ (function () {
         this.adminAccount = this.signer['address'];
         this.development = false;
         var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
-        if (fs.existsSync(votePath)) {
+        if (fs.existsSync(votePath) && !renew) {
             var source = fs.readFileSync(votePath, "UTF-8");
             var voteJson = JSON.parse(source);
             this.contractAddress = voteJson['address'];

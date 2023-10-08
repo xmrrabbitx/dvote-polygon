@@ -13,11 +13,11 @@ export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:st
                          
                     }).on('confirmation', function(confirmationNumber, receipt){
                         
-                        resolve("successful transaction: " + JSON.stringify(receipt)) 
+                        resolve("Vote successful casted: " + JSON.stringify(receipt)) 
                         
                     }).on('receipt', function(receipt:any){
             
-                        resolve("successful transaction: " + JSON.stringify(receipt)) 
+                        resolve("Vote successful casted: " + JSON.stringify(receipt)) 
                         
                     })
         })

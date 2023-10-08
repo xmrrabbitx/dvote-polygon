@@ -13,7 +13,7 @@
 ### Installation
 #### type this command in CMD or Terminal
 ```bash
-
+   npm i dvote-polygon
 ```
 
 ## Usage
@@ -22,42 +22,44 @@
 import {Dvote}  from "dvote-polygon";
 ```
 
-### Set your private key in Dotenv
+### First Set your Private Key in Dotenv
 ```env
-   PRIVATE_KEY=YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET
+   PRIVATE_KEY=YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET_ADDRESS
 ```
 
-### New Instance
+### Create New Instance
+#### parameters => endpointUrl:string , true|false
+#### second parameter is false byfeault and it could be true if you want to deploy new contract instead using previous one!
 ```js
 const endpointUrl = "http://127.0.0.1:8545" // your provider
 
-const dv = new Dvote(endpointUrl) // new instance
+const dv = new Dvote(endpointUrl, false) // create new instance
 ```
 
-### Compile
+### Compile Vote.sol Contract
 ```js
 let abi = dv.compile().abi()
 let bytecode = dv.compile().bytecode()
 ```
 
-### Deploy 
+### Deploy Contract
 ```js
 dv.deploy(abi, bytecode).then(data=>{
 
-   return data;
+  result = data;
 
 })
 ```
 
 ### Create a Poll
-#### first parameter is the name of your Vote and second is the options of poll. second params must be the instance of Array.
+#### parameters => first parameter is the name of your Vote and second is the options of poll. second params must be the instance of Array.
 ```js
-let voteName = "EBAY"
+let ballotName = "EBAY"
 let voteOptions = ["perfect", "good", "bad", "worst"]
 
 dv.createVote(voteName, voteOptions).then(data=>{
 
-   return data;
+  result = data;
 
 })
 ```
@@ -66,12 +68,12 @@ dv.createVote(voteName, voteOptions).then(data=>{
 #### there are 3 params, all of them are string type.
 ```js
 let fromAddress = "any User Wallet Address"
-let voteName = "EBAY"
+let ballotName = "EBAY"
 let voteOptions = "perfect"
 
 dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 
-   return data;
+   result = data;
     
 })
 ```
@@ -79,11 +81,11 @@ dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 ### Vote Result
 #### show the result of voting - just admin can access this
 ```js
-let voteName = "EBAY"
+let ballotName = "EBAY"
 
-dv.voteResult(voteName).then((data:any)=>{
+dv.voteResult(ballotName).then((data:any)=>{
 
-    return data;
+    result = data;
 
 })
 ```
@@ -96,17 +98,6 @@ npm run test --prefix ./node_modules/dvote-polygon
 
 ### contribution
 If you are interested in contributing to this project, I will be very glad ^__^
-
-### My Social Networks
-You can get in contact with me by:
-<br>
-[Linkedin](https://www.linkedin.com/in/xmrrabbitx/)
-<br>
-[Twitter](https://twitter.com/xmrrabbittx)
-<br>
-[Instagram](https://www.instagram.com/xmrrabbitx)
-<br>
-[Hackernoon](https://hackernoon.com/@xmrrabbitx)
 
 ### License
 MIT

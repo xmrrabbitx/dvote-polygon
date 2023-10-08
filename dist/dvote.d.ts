@@ -17,9 +17,10 @@ export declare class Dvote {
     private gasFee;
     private gasPrice;
     private votePathCheck;
-    constructor(endpointUrl: string);
+    web3Provider: any;
+    constructor(endpointUrl: string, renew?: boolean);
     compile(): CompiledContract;
-    deploy(abi: any, bytecode: string, gasFeeOptional?: any, gasPriceOptional?: any): Promise<unknown>;
+    deploy(abi: Array<JSON>, bytecode: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
     createVote(voteName: string, candidate: string[]): Promise<unknown>;
     addVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
     changeVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
