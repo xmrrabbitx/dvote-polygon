@@ -2,7 +2,6 @@ const path = require("path")
 const fs = require("fs")
 const solc = require("solc")
 const Web3 = require('web3')
-const HDWalletProvider = require("@truffle/hdwallet-provider")
 const dotenv = require("dotenv");
 
 import{ createVoteCall } from "./Methods/createVote"
@@ -24,28 +23,30 @@ export class Dvote {
     private privateKey:string
     public adminAccount:string;
     public web3:any
-    private ether:any
     private contractAddress:any
     private abi:Array<JSON>
     private contract:any
-    private contractEther:any
     private signer:any
-    public development:boolean
+    private devMode:boolean
     private gasFee:number
     private gasPrice:string
-    private votePathCheck:boolean;
 
-    constructor(endpointUrl:string, renew=false){
+    constructor(endpointUrl:string, renew=false, devMode=false){
 
       this.web3 = new Web3(endpointUrl)
       
-      dotenv.config();
-      const privateKey = process.env.PRIVATE_KEY;
-      this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
-      this.web3.eth.accounts.wallet.add(this.signer);
+      this.devMode = devMode
 
-      this.adminAccount = this.signer['address'];
-      this.development = false
+      if(!this.devMode){
+        dotenv.config();
+        const privateKey = process.env.PRIVATE_KEY;
+        console.log(dotenv.config());
+        this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
+        this.web3.eth.accounts.wallet.add(this.signer);
+      
+        this.adminAccount = this.signer['address'];
+
+      }
       
       const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
 
@@ -58,8 +59,6 @@ export class Dvote {
         this.abi = voteJson['jsonInterface']
 
         this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress,{handleRevert: true})
-        
-        this.votePathCheck = true;
 
       }
      
@@ -131,12 +130,12 @@ export class Dvote {
                   contract.deploy({data:bytecode}).send({from:this.signer.address, gas: gasFee,
                     gasPrice: gasPrice}).then(function(this:Dvote, result: { options: any }){
                       
-                    if(this.development){
+                    if(this.devMode){
 
-                      const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
+                      const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/build/contracts","Vote-test.json")
                       fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
                         if (err) throw err
-                        else resolve("deployed contract Saved into Vote.json file!")
+                        else resolve("deployed contract Saved into Vote-test.json file!")
                       })
                     }else{
                       
@@ -169,7 +168,7 @@ export class Dvote {
           
         }else{
           
-          if(!this.development){
+          if(!this.devMode){
 
             this.web3.eth.getCode(this.contractAddress, (error:any, code:any) => {
 

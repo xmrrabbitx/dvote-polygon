@@ -8,7 +8,7 @@ test('test 4: addVote testing', async () => {
 
       let rand = Math.floor(Math.random() * (2 - 0 + 1) + 0);
 
-      const data = await addVoteCall(web3, contract, abi, contractAddress, voteName, candidateName[rand], fromAddress[0])
+      const data = await addVoteCall(web3, contract, abi, contractAddress, voteName, candidateName[rand], fromAddress[1], fromAddress[0])
  
         let receipt:any = data
         let jsonStr = receipt.substring(receipt.indexOf('{'), receipt.lastIndexOf('}') + 1)

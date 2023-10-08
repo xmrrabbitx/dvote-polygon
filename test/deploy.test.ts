@@ -11,8 +11,8 @@ test('test 2: deploy testing', async () => {
       let abi = dv.compile().abi()
       let bytecode = dv.compile().bytecode()
       
-      let deploy = await dv.deploy(fromAddress[0],abi,bytecode)
+      let deploy = await dv.deploy(abi,bytecode)
       
-      expect(deploy).toMatch("deployed contract Saved into Vote-test.json file");
+      expect(deploy).toMatch("deployed contract Saved into Vote-test.json file!");
 
 },70000)

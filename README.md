@@ -19,7 +19,7 @@
 ## Usage
 ### First Set your Private Key in Dotenv
 ```env
-   PRIVATE_KEY=YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET_ADDRESS
+PRIVATE_KEY = YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET_ADDRESS
 ```
 
 ### Import the Class
@@ -93,7 +93,7 @@ dv.changeVote(ballotName, newOption, fromAddress).then((data:any)=>{
 ```
 
 ### Vote Result
-#### show the result of voting - just admin can access this
+#### show the result of voting
 ```js
 let ballotName = "EBAY"
 

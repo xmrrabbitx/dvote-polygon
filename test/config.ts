@@ -1,13 +1,11 @@
 const Web3 = require("web3")
 const path = require("path")
 const fs = require("fs")
+
 import {Dvote} from "../src/dvote"
 
-const mnemonic = null
+const dv = new Dvote("http://127.0.0.1:8545", false, true)
 
-const dv = new Dvote(mnemonic,"http://127.0.0.1:8545")
-
-dv.development = true
 
 const votePath = path.resolve(__dirname,"../build/contracts","Vote-test.json")
 
