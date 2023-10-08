@@ -4,7 +4,7 @@
 
 # ⚙️ dvote-polygon
 
-#### dvote-polygon is a typescript library integrated into the [polygon](https://polygon.technology/) network.
+#### dvote-polygon is a typescript library integrated into the     [polygon] (https://polygon.technology/) network.
 
 ##### This library is tested on the polygon Mumbai test network using quicknode provider.
 ##### This library is tested on Ganache, which is a personal Ethereum blockchain.
