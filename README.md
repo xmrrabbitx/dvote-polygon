@@ -104,12 +104,6 @@ dv.voteResult(ballotName).then((data:any)=>{
 })
 ```
 
-### Unit Testing
-#### you can use Jest to test of this library. first run ganache cli to start the personal blockchain. then run this command
-```bash
-npm run test --prefix ./node_modules/dvote-polygon
-```
-
 ### contribution
 If you are interested in contributing to this project, I will be very glad ^__^
 
