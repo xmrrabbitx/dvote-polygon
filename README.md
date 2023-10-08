@@ -1,4 +1,4 @@
-<p style="text-align: center;">
+<p style="text-align:center;">
   <img style="border-radius:10px;" src="asset/header/header.png" width="400px" alt="header.png">
 </p>
 
