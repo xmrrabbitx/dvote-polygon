@@ -17,14 +17,14 @@
 ```
 
 ## Usage
-### Import the Class
-```js
-import {Dvote}  from "dvote-polygon";
-```
-
 ### First Set your Private Key in Dotenv
 ```env
    PRIVATE_KEY=YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET_ADDRESS
+```
+
+### Import the Class
+```js
+import {Dvote}  from "dvote-polygon";
 ```
 
 ### Create New Instance
@@ -54,8 +54,8 @@ dv.deploy(abi, bytecode).then(data=>{
 ### Create a Poll
 #### parameters => first parameter is the name of your Vote and second is the options of poll. second params must be the instance of Array.
 ```js
-let ballotName = "EBAY"
-let voteOptions = ["perfect", "good", "bad", "worst"]
+let ballotName = "EBAY-SCORES"
+let voteOptions = ["Perfect", "Good", "Bad", "Worst"]
 
 dv.createVote(voteName, voteOptions).then(data=>{
 
@@ -69,12 +69,26 @@ dv.createVote(voteName, voteOptions).then(data=>{
 ```js
 let fromAddress = "any User Wallet Address"
 let ballotName = "EBAY"
-let voteOptions = "perfect"
+let voteOptions = "Perfect"
 
 dv.addVote(voteName, voteOptions, fromAddress).then(data=>{
 
    result = data;
     
+})
+```
+
+### Change your Vote
+#### you can change your casted vote to another option
+```js
+let fromAddress = "any User Wallet Address"
+let ballotName = "EBAY"
+let newOption = "Good"
+
+dv.changeVote(ballotName, newOption, fromAddress).then((data:any)=>{
+
+    result = data;
+
 })
 ```
 
