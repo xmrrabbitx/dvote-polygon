@@ -3,18 +3,15 @@ pragma solidity >= 0.4.0 <0.9.0;
 
 contract Vote {
 
-    mapping(string=>string[]) public candidateVote;
-    mapping(string => mapping(string => uint)) public voteCount;
-    mapping(string=>mapping(address => bool)) public voters;
- 
-    address public myaddress;
+    mapping(string => string[]) private voteBallot;
+    mapping(string => bool) private ballotNames;
+    mapping(string => mapping(address=>bool)) private voters;
+    mapping(string => mapping(address=>string)) private votersVoted;
+    mapping(string => mapping(string => uint)) private voteCount;
+   
+    address private myaddress;
 
-    struct Candidate {
-        string name;
-        uint votes;
-    }
-
-    struct Name{
+    struct pollResult {
         string name;
         uint256 votes;
     }
@@ -22,64 +19,71 @@ contract Vote {
 
     constructor(){
 
-                
+
     }
 
-    function createVote(string memory voteName, string[] memory candidateOption) public returns(string memory){
+    function createVote(string memory ballotName, string[] memory candidateOption) public returns(string memory){
 
-        require(bytes(voteName).length > 0, "you must set a name for your voting.");
+        require(bytes(ballotName).length > 0, "you must set a name for your voting.");
         require(candidateOption.length > 0, "Candidate options cannot be empty.");
-        require(candidateVote[voteName].length == 0,"the Poll already existed!");
-        
-        candidateVote[voteName] = candidateOption;
+        require(!ballotNames[ballotName] ,"the Poll already existed!");
 
-        require(candidateVote[voteName].length > 0, "something is wrong!");
-
-        return "create vote successful!";
+        ballotNames[ballotName] = true;
+ 
+        voteBallot[ballotName] = candidateOption;
         
+
+       return "create vote successful!";
+
     }
 
-    function addVote(string memory voteName, string memory candidate, address addr) public returns(string memory){
+    function addVote(string memory ballotName, string memory candidate, address addr) public returns(string memory){
 
-        require(candidateVote[voteName].length > 0, "Vote does not exist.");
-        
-        require(!voters[voteName][addr], "Address has already voted!");
+        require(ballotNames[ballotName] ,"the Poll doesn't existed!");
+        require(!voters[ballotName][addr], "Address has already voted!");
 
-        voteCount[voteName][candidate]++;
+        voteCount[ballotName][candidate]++;
         
-        voters[voteName][addr] = true;
+        voters[ballotName][addr] = true;
+        votersVoted[ballotName][addr] = candidate;
         
         return "Vote successful casted!";
 
     }
 
-    function changeVote(string memory voteName, string memory candidate, address addr) public returns (string memory) {
+    
+    function changeVote(string memory ballotName, string memory candidate, address addr) public returns (string memory) {
        
-        require(candidateVote[voteName].length > 0, "Vote does not exist.");
+        require(ballotNames[ballotName] ,"the Poll doesn't existed!");
+        require(voters[ballotName][addr], "Address has not voted!");
 
-        require(!voters[voteName][addr], "Address has already voted!");
+        string memory lastCandidate = votersVoted[ballotName][addr];
+
+        require(keccak256(abi.encodePacked(lastCandidate)) != keccak256(abi.encodePacked(candidate)), "The voter has already cast a vote for this option!");
+        
+        voteCount[ballotName][lastCandidate] = voteCount[ballotName][lastCandidate] - 1;
+        votersVoted[ballotName][addr] = candidate;
+        voteCount[ballotName][candidate]++;
 
         return "Vote changing casted!";
     }
 
 
-    function voteResult(string memory voteName) public view returns( Candidate[] memory){
+    function voteResult(string memory ballotName) public view returns( pollResult[] memory){
         
-        require(bytes(voteName).length > 0, "Vote name cannot be empty");
-        string[] memory candidates = candidateVote[voteName];
-        Candidate[] memory result = new Candidate[](candidates.length);
+        require(bytes(ballotName).length > 0, "Vote name cannot be empty");
+        require(ballotNames[ballotName], "the Poll doesn't existed!");
 
-        uint i;
-        for(i=0;i<candidates.length;i++){
+        string[] memory candidateOptions = voteBallot[ballotName];
+        pollResult[] memory result = new pollResult[](candidateOptions.length);
 
-            string memory candidateName = candidates[i];
-            uint votes =  voteCount[voteName][candidateName];
-            
-            result[i] = Candidate(candidateName, votes);
-
+        for (uint i = 0; i < candidateOptions.length; i++) {
+            result[i].name = candidateOptions[i];
+            result[i].votes = voteCount[ballotName][candidateOptions[i]];
         }
 
-        return result;
+       return result;
 
    }
+
 }

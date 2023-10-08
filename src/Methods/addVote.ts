@@ -11,6 +11,10 @@ export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:st
                 
                         reject("Error: " + error.reason)
                          
+                    }).on('confirmation', function(confirmationNumber, receipt){
+                        
+                        resolve("successful transaction: " + JSON.stringify(receipt)) 
+                        
                     }).on('receipt', function(receipt:any){
             
                         resolve("successful transaction: " + JSON.stringify(receipt)) 

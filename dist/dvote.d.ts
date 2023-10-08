@@ -4,7 +4,7 @@ export interface CompiledContract {
 }
 export declare class Dvote {
     private provider;
-    accounts: any;
+    private privateKey;
     adminAccount: string;
     web3: any;
     private ether;
@@ -14,9 +14,12 @@ export declare class Dvote {
     private contractEther;
     private signer;
     development: boolean;
-    constructor(account: string, endpointUrl: string);
+    private gasFee;
+    private gasPrice;
+    private votePathCheck;
+    constructor(endpointUrl: string);
     compile(): CompiledContract;
-    deploy(abi: any, bytecode: string): Promise<unknown>;
+    deploy(abi: any, bytecode: string, gasFeeOptional?: any, gasPriceOptional?: any): Promise<unknown>;
     createVote(voteName: string, candidate: string[]): Promise<unknown>;
     addVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
     changeVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;

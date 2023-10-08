@@ -3,6 +3,7 @@ const fs = require("fs")
 const solc = require("solc")
 const Web3 = require('web3')
 const HDWalletProvider = require("@truffle/hdwallet-provider")
+const dotenv = require("dotenv");
 
 import{ createVoteCall } from "./Methods/createVote"
 import{ addVoteCall } from "./Methods/addVote"
@@ -19,8 +20,8 @@ export interface CompiledContract {
 
 export class Dvote {
        
-    private provider:any
-    public accounts:any
+    private provider:string
+    private privateKey:string
     public adminAccount:string;
     public web3:any
     private ether:any
@@ -30,13 +31,20 @@ export class Dvote {
     private contractEther:any
     private signer:any
     public development:boolean
+    private gasFee:number
+    private gasPrice:string
+    private votePathCheck:boolean;
 
-    constructor(account:string,endpointUrl:string){
+    constructor(endpointUrl:string){
 
       this.web3 = new Web3(endpointUrl)
 
-      this.adminAccount = account;
+      dotenv.config();
+      const privateKey = process.env.PRIVATE_KEY;
+      this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
+      this.web3.eth.accounts.wallet.add(this.signer);
 
+      this.adminAccount = this.signer['address'];
       this.development = false
       
       const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
@@ -51,6 +59,7 @@ export class Dvote {
 
         this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress,{handleRevert: true})
         
+        this.votePathCheck = true;
 
       }
      
@@ -59,75 +68,97 @@ export class Dvote {
 
 
     compile():CompiledContract{ 
-      
-      const solPath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.sol")
-      const source  = fs.readFileSync(solPath,"UTF-8")
 
-      const input = {
-        language: 'Solidity',
-        sources: {
-          'Vote.sol': {
-            content: source,
-          },
-        },
-        settings: {
-          outputSelection: {
-            '*': {
-              '*': ['abi', 'evm.bytecode'],
+        const solPath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.sol")
+        const source  = fs.readFileSync(solPath,"UTF-8")
+
+        const input = {
+          language: 'Solidity',
+          sources: {
+            'Vote.sol': {
+              content: source,
             },
           },
-        },
-      };
+          settings: {
+            outputSelection: {
+              '*': {
+                '*': ['abi', 'evm.bytecode'],
+              },
+            },
+          },
+        };
+        
+        const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
+        
+        return {
+          abi:function(){ 
+
+            return compiledContract['contracts']['Vote.sol']['Vote']['abi']
+            
+
+          },
+          bytecode:function(){
+
+            return "0x" + compiledContract['contracts']['Vote.sol']['Vote']['evm']['bytecode']['object']
+
+          }
       
-      const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
-
-      return {
-        abi:function(){ 
-
-          return compiledContract['contracts']['Vote.sol']['Vote']['abi']
-          
-
-        },
-        bytecode:function(){
-
-          return "0x" + compiledContract['contracts']['Vote.sol']['Vote']['evm']['bytecode']['object']
-
         }
-     
-      }
+      
     }
     
-    deploy(abi: any, bytecode:string){
+    deploy(abi: any, bytecode:string, gasFeeOptional=null, gasPriceOptional=null){
       
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
         
           var contract = new this.web3.eth.Contract(abi)
-          
-          contract.deploy({data:bytecode}).send({from:this.adminAccount,gas: 4000000,
-            gasPrice: '30000000000'}).then(function(this:Dvote,result: { options: any }){
-              
-            result.options['ByteCode'] = this.compile().bytecode();
-              
-            if(this.development){
 
-              const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
-              fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
-                if (err) throw err
-                else resolve("deployed contract Saved into Vote.json file")
-              })
-            }else{
-              
-              const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
-              fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
-                if (err) throw err
-                else resolve("deployed contract Saved into Vote.json file")
-              })
-            }
-          }.bind(this)).catch((error:any)=>{
+          const contractData = {
+            data: bytecode,
+            from: this.signer.address,
+          };
 
-              reject(error)
-          })
+          this.web3.eth.estimateGas(contractData)
+          .then((gasFee:number) => {
+           
+            this.web3.eth.getGasPrice()
+              .then((gasPrice:string) => { 
+
+                gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+      
+                  contract.deploy({data:bytecode}).send({from:this.signer.address, gas: gasFee,
+                    gasPrice: gasPrice}).then(function(this:Dvote, result: { options: any }){
+                      
+                    if(this.development){
+
+                      const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
+                      fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
+                        if (err) throw err
+                        else resolve("deployed contract Saved into Vote.json file!")
+                      })
+                    }else{
+                      
+                      const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
+                      fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
+                        if (err) throw err
+                        else resolve("deployed contract Saved into Vote.json file")
+                      })
+                    }
+                  }.bind(this)).catch((error:any)=>{
+
+                      reject(error)
+                  })
+                  
+                })
+                .catch(function (error:any) {
+                    reject(error)
+                });
+            })
+            .catch(function (error:any) {
+                reject(error)
+            });
          
           
         }
@@ -172,7 +203,7 @@ export class Dvote {
       return new Promise((resolve,reject)=>{
         
         createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, this.adminAccount).then(result=>{
-
+     
           resolve(result)
 
         }).catch((error:any)=>{

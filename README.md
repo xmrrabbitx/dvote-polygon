@@ -22,12 +22,16 @@
 import {Dvote}  from "dvote-polygon";
 ```
 
+### Set your private key in Dotenv
+```env
+   PRIVATE_KEY=YOUR_PRIVATE_KEY_OF_CRYPTO_WALLET
+```
+
 ### New Instance
 ```js
 const endpointUrl = "http://127.0.0.1:8545" // your provider
-const walletAddress = "walletAddress" // your wallet Address
 
-const dv = new Dvote(walletAddress , endpointUrl ) // new instance
+const dv = new Dvote(endpointUrl) // new instance
 ```
 
 ### Compile
@@ -79,7 +83,7 @@ let voteName = "EBAY"
 
 dv.voteResult(voteName).then((data:any)=>{
 
-    console.log(data)
+    return data;
 
 })
 ```

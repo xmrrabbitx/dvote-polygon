@@ -6,14 +6,19 @@ var fs = require("fs");
 var solc = require("solc");
 var Web3 = require('web3');
 var HDWalletProvider = require("@truffle/hdwallet-provider");
+var dotenv = require("dotenv");
 var createVote_1 = require("./Methods/createVote");
 var addVote_1 = require("./Methods/addVote");
 var voteResult_1 = require("./Methods/voteResult");
 var changeVote_1 = require("./Methods/changeVote");
 var Dvote = /** @class */ (function () {
-    function Dvote(account, endpointUrl) {
+    function Dvote(endpointUrl) {
         this.web3 = new Web3(endpointUrl);
-        this.adminAccount = account;
+        dotenv.config();
+        var privateKey = process.env.PRIVATE_KEY;
+        this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
+        this.web3.eth.accounts.wallet.add(this.signer);
+        this.adminAccount = this.signer['address'];
         this.development = false;
         var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
         if (fs.existsSync(votePath)) {
@@ -22,6 +27,7 @@ var Dvote = /** @class */ (function () {
             this.contractAddress = voteJson['address'];
             this.abi = voteJson['jsonInterface'];
             this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress, { handleRevert: true });
+            this.votePathCheck = true;
         }
     }
     Dvote.prototype.compile = function () {
@@ -52,33 +58,52 @@ var Dvote = /** @class */ (function () {
             }
         };
     };
-    Dvote.prototype.deploy = function (abi, bytecode) {
+    Dvote.prototype.deploy = function (abi, bytecode, gasFeeOptional, gasPriceOptional) {
         var _this = this;
+        if (gasFeeOptional === void 0) { gasFeeOptional = null; }
+        if (gasPriceOptional === void 0) { gasPriceOptional = null; }
         return new Promise(function (resolve, reject) {
             var deployContract = function () {
                 var contract = new _this.web3.eth.Contract(abi);
-                contract.deploy({ data: bytecode }).send({ from: _this.adminAccount, gas: 4000000,
-                    gasPrice: '30000000000' }).then(function (result) {
-                    result.options['ByteCode'] = this.compile().bytecode();
-                    if (this.development) {
-                        var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
-                        fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
-                            if (err)
-                                throw err;
-                            else
-                                resolve("deployed contract Saved into Vote.json file");
+                var contractData = {
+                    data: bytecode,
+                    from: _this.signer.address,
+                };
+                _this.web3.eth.estimateGas(contractData)
+                    .then(function (gasFee) {
+                    _this.web3.eth.getGasPrice()
+                        .then(function (gasPrice) {
+                        gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                        gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+                        contract.deploy({ data: bytecode }).send({ from: _this.signer.address, gas: gasFee,
+                            gasPrice: gasPrice }).then(function (result) {
+                            if (this.development) {
+                                var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
+                                fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
+                                    if (err)
+                                        throw err;
+                                    else
+                                        resolve("deployed contract Saved into Vote.json file!");
+                                });
+                            }
+                            else {
+                                var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
+                                fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
+                                    if (err)
+                                        throw err;
+                                    else
+                                        resolve("deployed contract Saved into Vote.json file");
+                                });
+                            }
+                        }.bind(_this)).catch(function (error) {
+                            reject(error);
                         });
-                    }
-                    else {
-                        var filepath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
-                        fs.writeFile(filepath, JSON.stringify(result.options), function (err) {
-                            if (err)
-                                throw err;
-                            else
-                                resolve("deployed contract Saved into Vote.json file");
-                        });
-                    }
-                }.bind(_this)).catch(function (error) {
+                    })
+                        .catch(function (error) {
+                        reject(error);
+                    });
+                })
+                    .catch(function (error) {
                     reject(error);
                 });
             };
