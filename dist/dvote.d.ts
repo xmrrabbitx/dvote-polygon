@@ -5,21 +5,23 @@ export interface CompiledContract {
 export declare class Dvote {
     private provider;
     private privateKey;
-    adminAccount: string;
-    web3: any;
+    private adminAccount;
+    private web3;
     private contractAddress;
     private abi;
     private contract;
     private signer;
-    private devMode;
     private gasFee;
     private gasPrice;
-    constructor(endpointUrl: string, renew?: boolean, devMode?: boolean);
+    renewContract: boolean;
+    private bytecode;
+    private deployed;
+    constructor(endpointUrl: string, renewContract?: boolean);
     compile(): CompiledContract;
     deploy(abi: Array<JSON>, bytecode: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
-    createVote(voteName: string, candidate: string[]): Promise<unknown>;
-    addVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
-    changeVote(voteName: string, candidate: string, fromAddress: string): Promise<unknown>;
-    voteResult(voteName: string): any;
+    createVote(voteName: string, candidate: string[], gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
+    addVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
+    changeVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
+    voteResult(voteName: string): Promise<unknown>;
 }
 //# sourceMappingURL=dvote.d.ts.map

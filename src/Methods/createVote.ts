@@ -1,12 +1,11 @@
 
-export function createVoteCall(web3:any, contract:any, abi:any, contractAddress:string, voteName:string, candidate:string[], adminAccount:string){
+export function createVoteCall(web3:any, contract:any, abi:any, contractAddress:string, voteName:string, candidate:string[], adminAccount:string, gasFee:number, gasPrice:string){
 
     return new Promise((resolve, reject) => {
 
-    
         contract.methods.createVote(voteName, candidate).send(
             {from:adminAccount,
-             gas: 3000000})
+             gas: gasFee ,gasPrice:gasPrice})
                 
         .on('error', function(error:any, receipt:any) {
 
@@ -20,6 +19,10 @@ export function createVoteCall(web3:any, contract:any, abi:any, contractAddress:
 
             resolve("create vote successful: " + JSON.stringify(receipt)) 
 
+        }).catch(error=>{
+
+            resolve("Error: " + error.reason)
         })
+        
     })
 }

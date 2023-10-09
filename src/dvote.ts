@@ -21,48 +21,49 @@ export class Dvote {
        
     private provider:string
     private privateKey:string
-    public adminAccount:string;
-    public web3:any
+    private adminAccount:string
+    private web3:any
     private contractAddress:any
     private abi:Array<JSON>
     private contract:any
     private signer:any
-    private devMode:boolean
     private gasFee:number
     private gasPrice:string
+    public renewContract:boolean
+    private bytecode:string
+    private deployed:boolean;
 
-    constructor(endpointUrl:string, renew=false, devMode=false){
+    constructor(endpointUrl:string, renewContract=false){
 
       this.web3 = new Web3(endpointUrl)
-      
-      this.devMode = devMode
 
-      if(!this.devMode){
-        dotenv.config();
-        const privateKey = process.env.PRIVATE_KEY;
-        console.log(dotenv.config());
-        this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
-        this.web3.eth.accounts.wallet.add(this.signer);
+      dotenv.config();
+      const privateKey = process.env.PRIVATE_KEY;
+      this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
+      this.web3.eth.accounts.wallet.add(this.signer);
       
-        this.adminAccount = this.signer['address'];
-
-      }
+      this.adminAccount = this.signer['address'];
       
       const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
-
-      if (fs.existsSync(votePath) && !renew){
-
+     
+      this.renewContract = renewContract;
+      if (fs.existsSync(votePath) && this.renewContract === false){
+ 
         const source  = fs.readFileSync(votePath,"UTF-8")
         const voteJson = JSON.parse(source)
  
         this.contractAddress = voteJson['address']
         this.abi = voteJson['jsonInterface']
+        this.bytecode = voteJson['bytecode']
 
         this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress,{handleRevert: true})
-
+  
+        this.deployed = true;
+      }else{
+        this.deployed = false;
       }
-     
-       
+
+
     }
 
 
@@ -111,7 +112,7 @@ export class Dvote {
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
         
-          var contract = new this.web3.eth.Contract(abi)
+          var contract = new this.web3.eth.Contract(abi,{handleRevert: true})
 
           const contractData = {
             data: bytecode,
@@ -126,25 +127,22 @@ export class Dvote {
  
                 gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
                 gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
-
+ 
                   contract.deploy({data:bytecode}).send({from:this.signer.address, gas: gasFee,
                     gasPrice: gasPrice}).then(function(this:Dvote, result: { options: any }){
                       
-                    if(this.devMode){
+                      var json:any = JSON.stringify(result.options);
+                      var jsonObject = JSON.parse(json);
+                      jsonObject.bytecode = bytecode;
+                      var newJsonString = JSON.stringify(jsonObject);
 
-                      const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/build/contracts","Vote-test.json")
-                      fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
-                        if (err) throw err
-                        else resolve("deployed contract Saved into Vote-test.json file!")
-                      })
-                    }else{
-                      
                       const filepath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
-                      fs.writeFile(filepath,JSON.stringify(result.options),function (err: any) {
+                      fs.writeFile(filepath,newJsonString,function (err: any) {
+                        
                         if (err) throw err
                         else resolve("deployed contract Saved into Vote.json file")
                       })
-                    }
+                    
                   }.bind(this)).catch((error:any)=>{
 
                       reject(error)
@@ -168,8 +166,6 @@ export class Dvote {
           
         }else{
           
-          if(!this.devMode){
-
             this.web3.eth.getCode(this.contractAddress, (error:any, code:any) => {
 
               if (error) {
@@ -186,67 +182,141 @@ export class Dvote {
 
               }
             });
-          }else{
-            return  deployContract();
-          }
+          
         }
       })
     }
 
-    createVote(voteName:string, candidate:string[]){
+    createVote(voteName:string, candidate:string[], gasFeeOptional:number=null, gasPriceOptional:string=null){
      
+      return new Promise((resolve,reject)=>{
+
+        if(this.deployed==true){
+
+          const contractData = {
+            data: this.bytecode,
+            from: this.signer.address,
+          };
+          this.web3.eth.estimateGas(contractData)
+            .then((gasFee:number) => {
+            
+              this.web3.eth.getGasPrice()
+                .then((gasPrice:string) => { 
+
+                  gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                  gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+    
+                  createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, this.adminAccount, gasFee, gasPrice).then(result=>{
+      
+                  resolve(result)
+
+                })
+              })
+
+          }).catch((error:any)=>{
+
+            reject(error)
+          })
+
+        }else{
+
+          reject("there is no contract. please deploy your contract!")
+        
+        }
+
+      })
+
+    }
+
+    addVote(voteName:string, candidate:string, fromAddress:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
+
       return new Promise((resolve,reject)=>{
         
-        createVoteCall(this.web3, this.contract, this.abi, this.contractAddress, voteName, candidate, this.adminAccount).then(result=>{
-     
-          resolve(result)
+        if(this.deployed==true){
+          const contractData = {
+            data: this.bytecode,
+            from: this.signer.address,
+          };
+          this.web3.eth.estimateGas(contractData)
+            .then((gasFee:number) => {
+            
+              this.web3.eth.getGasPrice()
+                .then((gasPrice:string) => { 
 
-        }).catch((error:any)=>{
+                  gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                  gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+    
+                addVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress, this.adminAccount, gasFee, gasPrice).then(result=>{
 
-          reject(error)
-        })
+                  resolve(result)
 
+              })
+            })
+
+          }).catch((error:any)=>{
+
+            reject(error)
+          })
+        }else{
+
+          reject("there is no contract. please deploy your contract!")
+        
+        }
       })
 
     }
 
-    addVote(voteName:string, candidate:string, fromAddress:string){
-
+    changeVote(voteName:string, candidate:string, fromAddress:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
       return new Promise((resolve,reject)=>{
+        if(this.deployed==true){
+          const contractData = {
+            data: this.bytecode,
+            from: this.signer.address,
+          };
+          this.web3.eth.estimateGas(contractData)
+            .then((gasFee:number) => {
+            
+              this.web3.eth.getGasPrice()
+                .then((gasPrice:string) => { 
 
-        addVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress, this.adminAccount).then(result=>{
+                  gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                  gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+    
+                  changeVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress, gasFee, gasPrice).then(result=>{
 
-          resolve(result)
+                    resolve(result)
+                })
+              })
 
-        }).catch((error:any)=>{
+          }).catch((error:any)=>{
 
-          reject(error)
-        })
+            reject(error)
+          })
+        }else{
 
-      })
-
-    }
-
-    changeVote(voteName:string, candidate:string, fromAddress:string){
-      return new Promise((resolve,reject)=>{
-
-        changeVoteCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, candidate, fromAddress).then(result=>{
-
-          resolve(result)
-
-        }).catch((error:any)=>{
-
-          reject(error)
-        })
-
+          reject("there is no contract. please deploy your contract!")
+        
+        }
       })
     }
 
     voteResult(voteName:string){
+        
+      return new Promise((resolve,reject)=>{
 
-      return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, this.adminAccount)
- 
-     }
+          if(this.deployed==true){
+            
+            return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, this.adminAccount).then(result=>{
 
-  }
-  
+              resolve(result)
+              
+            })
+          
+          }else{
+
+            reject("there is no contract. please deploy your contract!")
+        
+          }
+      })   
+    } 
+}
