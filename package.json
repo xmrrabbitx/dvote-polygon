@@ -1,8 +1,9 @@
 {
   "name": "dvote-polygon",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Dapp Voting Library Integrated into Polygon Network",
   "main": "dist/dvote.js",
+  "email":"xmrrabbitx@gmail.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/xmrrabbitx/dvote-polygon"
