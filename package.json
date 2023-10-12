@@ -19,7 +19,6 @@
   "author": "xmrrabbitx",
   "license": "MIT",
   "dependencies": {
-    "@truffle/hdwallet-provider": "^2.1.10",
     "dotenv": "^16.0.3",
     "eth-revert-reason": "^1.0.3",
     "fs": "^0.0.1-security",
