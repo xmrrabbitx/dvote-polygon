@@ -18,10 +18,10 @@ export declare class Dvote {
     private deployed;
     constructor(endpointUrl: string, renewContract?: boolean);
     compile(): CompiledContract;
-    deploy(abi: Array<JSON>, bytecode: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
-    createVote(voteName: string, candidate: string[], gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
-    addVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
-    changeVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): Promise<unknown>;
-    voteResult(voteName: string): Promise<unknown>;
+    deploy(abi: Array<JSON>, bytecode: string, gasFeeOptional?: number, gasPriceOptional?: string): any;
+    createVote(voteName: string, candidate: string[], gasFeeOptional?: number, gasPriceOptional?: string): any;
+    addVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): any;
+    changeVote(voteName: string, candidate: string, fromAddress: string, gasFeeOptional?: number, gasPriceOptional?: string): any;
+    voteResult(voteName: string): any;
 }
 //# sourceMappingURL=dvote.d.ts.map
