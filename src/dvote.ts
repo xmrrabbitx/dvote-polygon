@@ -44,11 +44,15 @@ export class Dvote {
       
       this.adminAccount = this.signer['address'];
       
-      const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
-     
       this.renewContract = renewContract;
-      if (fs.existsSync(votePath) && this.renewContract === false){
- 
+     
+    }
+
+    checkContract():boolean{
+
+      const votePath = path.join( process.cwd(), "./node_modules/dvote-polygon/contracts","Vote.json")
+      
+      if (fs.existsSync(votePath)){
         const source  = fs.readFileSync(votePath,"UTF-8")
         const voteJson = JSON.parse(source)
  
@@ -57,12 +61,9 @@ export class Dvote {
         this.bytecode = voteJson['bytecode']
 
         this.contract = new this.web3.eth.Contract(this.abi,this.contractAddress,{handleRevert: true})
-  
-        this.deployed = true;
-      }else{
-        this.deployed = false;
+        
+        return true
       }
-
 
     }
 
@@ -95,7 +96,6 @@ export class Dvote {
 
             return compiledContract['contracts']['Vote.sol']['Vote']['abi']
             
-
           },
           bytecode:function(){
 
@@ -109,6 +109,8 @@ export class Dvote {
     
     deploy(abi: Array<JSON>, bytecode:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
       
+      this.checkContract();
+
       return new Promise((resolve, reject) => {
         const deployContract = ()=>{
         
@@ -160,12 +162,15 @@ export class Dvote {
           
         }
         
-        if(typeof this.contractAddress === "undefined"){
+        if(this.checkContract() !== true){
           
           return deployContract();
           
         }else{
-          
+          if(this.renewContract === true){
+            return deployContract();
+          }
+          else{
             this.web3.eth.getCode(this.contractAddress, (error:any, code:any) => {
 
               if (error) {
@@ -182,16 +187,16 @@ export class Dvote {
 
               }
             });
-          
+          }
         }
       })
     }
 
     createVote(voteName:string, candidate:string[], gasFeeOptional:number=null, gasPriceOptional:string=null){
-     
-      return new Promise((resolve,reject)=>{
+      
+      this.checkContract();
 
-        if(this.deployed==true){
+      return new Promise((resolve,reject)=>{
 
           const contractData = {
             data: this.bytecode,
@@ -218,21 +223,17 @@ export class Dvote {
             reject(error)
           })
 
-        }else{
-
-          reject("there is no contract. please deploy your contract!")
-        
-        }
-
       })
 
     }
 
     addVote(voteName:string, candidate:string, fromAddress:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
 
+      this.checkContract();
+
       return new Promise((resolve,reject)=>{
         
-        if(this.deployed==true){
+
           const contractData = {
             data: this.bytecode,
             from: this.signer.address,
@@ -257,18 +258,16 @@ export class Dvote {
 
             reject(error)
           })
-        }else{
-
-          reject("there is no contract. please deploy your contract!")
-        
-        }
       })
 
     }
 
     changeVote(voteName:string, candidate:string, fromAddress:string, gasFeeOptional:number=null, gasPriceOptional:string=null){
+      
+      this.checkContract();
+
       return new Promise((resolve,reject)=>{
-        if(this.deployed==true){
+
           const contractData = {
             data: this.bytecode,
             from: this.signer.address,
@@ -292,19 +291,14 @@ export class Dvote {
 
             reject(error)
           })
-        }else{
-
-          reject("there is no contract. please deploy your contract!")
-        
-        }
       })
     }
 
     voteResult(voteName:string){
         
-      return new Promise((resolve,reject)=>{
+      this.checkContract();
 
-          if(this.deployed==true){
+      return new Promise((resolve,reject)=>{
             
             return voteResultCall(this.web3, this.contract, this.abi,this.contractAddress, voteName, this.adminAccount).then(result=>{
 
@@ -312,11 +306,6 @@ export class Dvote {
               
             })
           
-          }else{
-
-            reject("there is no contract. please deploy your contract!")
-        
-          }
       })   
     } 
 }

@@ -1,2 +1,2 @@
-export declare function changeVoteCall(web3: any, contract: any, abi: any, contractAddress: string, voteName: string, candidate: string, fromAddress: string, gasFee: number, gasPrice: string): any;
+export declare function changeVoteCall(web3: any, contract: any, abi: any, contractAddress: string, voteName: string, candidate: string, fromAddress: string, gasFee: number, gasPrice: string): Promise<unknown>;
 //# sourceMappingURL=changeVote.d.ts.map

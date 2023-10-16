@@ -1,4 +1,4 @@
-
+import {checkTrxError} from "./error/checkTrxError"
 
 export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:string, voteName:string, candidate:string, fromAddress:string, adminAccount:string, gasFee:number, gasPrice:string){
 
@@ -12,13 +12,12 @@ export function addVoteCall(web3:any, contract:any, abi: any, contractAddress:st
                         reject("Error: " + error.reason)
                          
                     }).on('confirmation', function(confirmationNumber, receipt){
-                        
-                        resolve("Vote successful casted: " + JSON.stringify(receipt)) 
-                        
-                    }).on('receipt', function(receipt:any){
-            
-                        resolve("Vote successful casted: " + JSON.stringify(receipt)) 
-                        
+                        if(receipt.status === false){
+                          
+                          checkTrxError(web3, receipt.transactionHash, receipt.blockNumber)
+                        }else{
+                            resolve("add vote successful: " + JSON.stringify(receipt))
+                        }
                     }).catch(error=>{
 
                         resolve("Error: " + error.reason)

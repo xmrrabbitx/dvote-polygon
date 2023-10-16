@@ -19,21 +19,20 @@ var Dvote = /** @class */ (function () {
         this.signer = this.web3.eth.accounts.privateKeyToAccount(privateKey);
         this.web3.eth.accounts.wallet.add(this.signer);
         this.adminAccount = this.signer['address'];
-        var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
         this.renewContract = renewContract;
-        if (fs.existsSync(votePath) && this.renewContract === false) {
+    }
+    Dvote.prototype.checkContract = function () {
+        var votePath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.json");
+        if (fs.existsSync(votePath)) {
             var source = fs.readFileSync(votePath, "UTF-8");
             var voteJson = JSON.parse(source);
             this.contractAddress = voteJson['address'];
             this.abi = voteJson['jsonInterface'];
             this.bytecode = voteJson['bytecode'];
             this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress, { handleRevert: true });
-            this.deployed = true;
+            return true;
         }
-        else {
-            this.deployed = false;
-        }
-    }
+    };
     Dvote.prototype.compile = function () {
         var solPath = path.join(process.cwd(), "./node_modules/dvote-polygon/contracts", "Vote.sol");
         var source = fs.readFileSync(solPath, "UTF-8");
@@ -66,6 +65,7 @@ var Dvote = /** @class */ (function () {
         var _this = this;
         if (gasFeeOptional === void 0) { gasFeeOptional = null; }
         if (gasPriceOptional === void 0) { gasPriceOptional = null; }
+        this.checkContract();
         return new Promise(function (resolve, reject) {
             var deployContract = function () {
                 var contract = new _this.web3.eth.Contract(abi, { handleRevert: true });
@@ -104,21 +104,26 @@ var Dvote = /** @class */ (function () {
                     reject(error);
                 });
             };
-            if (typeof _this.contractAddress === "undefined") {
+            if (_this.checkContract() !== true) {
                 return deployContract();
             }
             else {
-                _this.web3.eth.getCode(_this.contractAddress, function (error, code) {
-                    if (error) {
-                        reject(error);
-                    }
-                    else if (code === '0x') {
-                        return deployContract();
-                    }
-                    else {
-                        resolve("the Contract already deployed and exists at address ".concat(_this.contractAddress));
-                    }
-                });
+                if (_this.renewContract === true) {
+                    return deployContract();
+                }
+                else {
+                    _this.web3.eth.getCode(_this.contractAddress, function (error, code) {
+                        if (error) {
+                            reject(error);
+                        }
+                        else if (code === '0x') {
+                            return deployContract();
+                        }
+                        else {
+                            resolve("the Contract already deployed and exists at address ".concat(_this.contractAddress));
+                        }
+                    });
+                }
             }
         });
     };
@@ -126,100 +131,84 @@ var Dvote = /** @class */ (function () {
         var _this = this;
         if (gasFeeOptional === void 0) { gasFeeOptional = null; }
         if (gasPriceOptional === void 0) { gasPriceOptional = null; }
+        this.checkContract();
         return new Promise(function (resolve, reject) {
-            if (_this.deployed == true) {
-                var contractData = {
-                    data: _this.bytecode,
-                    from: _this.signer.address,
-                };
-                _this.web3.eth.estimateGas(contractData)
-                    .then(function (gasFee) {
-                    _this.web3.eth.getGasPrice()
-                        .then(function (gasPrice) {
-                        gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
-                        gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
-                        (0, createVote_1.createVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, _this.adminAccount, gasFee, gasPrice).then(function (result) {
-                            resolve(result);
-                        });
+            var contractData = {
+                data: _this.bytecode,
+                from: _this.signer.address,
+            };
+            _this.web3.eth.estimateGas(contractData)
+                .then(function (gasFee) {
+                _this.web3.eth.getGasPrice()
+                    .then(function (gasPrice) {
+                    gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                    gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+                    (0, createVote_1.createVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, _this.adminAccount, gasFee, gasPrice).then(function (result) {
+                        resolve(result);
                     });
-                }).catch(function (error) {
-                    reject(error);
                 });
-            }
-            else {
-                reject("there is no contract. please deploy your contract!");
-            }
+            }).catch(function (error) {
+                reject(error);
+            });
         });
     };
     Dvote.prototype.addVote = function (voteName, candidate, fromAddress, gasFeeOptional, gasPriceOptional) {
         var _this = this;
         if (gasFeeOptional === void 0) { gasFeeOptional = null; }
         if (gasPriceOptional === void 0) { gasPriceOptional = null; }
+        this.checkContract();
         return new Promise(function (resolve, reject) {
-            if (_this.deployed == true) {
-                var contractData = {
-                    data: _this.bytecode,
-                    from: _this.signer.address,
-                };
-                _this.web3.eth.estimateGas(contractData)
-                    .then(function (gasFee) {
-                    _this.web3.eth.getGasPrice()
-                        .then(function (gasPrice) {
-                        gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
-                        gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
-                        (0, addVote_1.addVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress, _this.adminAccount, gasFee, gasPrice).then(function (result) {
-                            resolve(result);
-                        });
+            var contractData = {
+                data: _this.bytecode,
+                from: _this.signer.address,
+            };
+            _this.web3.eth.estimateGas(contractData)
+                .then(function (gasFee) {
+                _this.web3.eth.getGasPrice()
+                    .then(function (gasPrice) {
+                    gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                    gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+                    (0, addVote_1.addVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress, _this.adminAccount, gasFee, gasPrice).then(function (result) {
+                        resolve(result);
                     });
-                }).catch(function (error) {
-                    reject(error);
                 });
-            }
-            else {
-                reject("there is no contract. please deploy your contract!");
-            }
+            }).catch(function (error) {
+                reject(error);
+            });
         });
     };
     Dvote.prototype.changeVote = function (voteName, candidate, fromAddress, gasFeeOptional, gasPriceOptional) {
         var _this = this;
         if (gasFeeOptional === void 0) { gasFeeOptional = null; }
         if (gasPriceOptional === void 0) { gasPriceOptional = null; }
+        this.checkContract();
         return new Promise(function (resolve, reject) {
-            if (_this.deployed == true) {
-                var contractData = {
-                    data: _this.bytecode,
-                    from: _this.signer.address,
-                };
-                _this.web3.eth.estimateGas(contractData)
-                    .then(function (gasFee) {
-                    _this.web3.eth.getGasPrice()
-                        .then(function (gasPrice) {
-                        gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
-                        gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
-                        (0, changeVote_1.changeVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress, gasFee, gasPrice).then(function (result) {
-                            resolve(result);
-                        });
+            var contractData = {
+                data: _this.bytecode,
+                from: _this.signer.address,
+            };
+            _this.web3.eth.estimateGas(contractData)
+                .then(function (gasFee) {
+                _this.web3.eth.getGasPrice()
+                    .then(function (gasPrice) {
+                    gasFee = gasFeeOptional ? gasFeeOptional : gasFee;
+                    gasPrice = gasPriceOptional ? gasPriceOptional : gasPrice;
+                    (0, changeVote_1.changeVoteCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, candidate, fromAddress, gasFee, gasPrice).then(function (result) {
+                        resolve(result);
                     });
-                }).catch(function (error) {
-                    reject(error);
                 });
-            }
-            else {
-                reject("there is no contract. please deploy your contract!");
-            }
+            }).catch(function (error) {
+                reject(error);
+            });
         });
     };
     Dvote.prototype.voteResult = function (voteName) {
         var _this = this;
+        this.checkContract();
         return new Promise(function (resolve, reject) {
-            if (_this.deployed == true) {
-                return (0, voteResult_1.voteResultCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, _this.adminAccount).then(function (result) {
-                    resolve(result);
-                });
-            }
-            else {
-                reject("there is no contract. please deploy your contract!");
-            }
+            return (0, voteResult_1.voteResultCall)(_this.web3, _this.contract, _this.abi, _this.contractAddress, voteName, _this.adminAccount).then(function (result) {
+                resolve(result);
+            });
         });
     };
     return Dvote;

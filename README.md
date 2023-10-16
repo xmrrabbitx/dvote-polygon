@@ -13,7 +13,7 @@
 ### Installation
 ##### type this command in CMD or Terminal
 ```bash
-   
+   npm i dvote-polygon
 ```
 
 ## Usage
